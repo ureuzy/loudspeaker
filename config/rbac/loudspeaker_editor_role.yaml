@@ -1,0 +1,24 @@
+# permissions for end users to edit loudspeakers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: loudspeaker-editor-role
+rules:
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers/status
+  verbs:
+  - get

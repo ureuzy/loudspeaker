@@ -1,0 +1,20 @@
+domain: masanetes.github.io
+layout:
+- go.kubebuilder.io/v3
+projectName: loudspeaker
+repo: github.com/masanetes/loudspeaker
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: masanetes.github.io
+  group: loudspeaker
+  kind: Loudspeaker
+  path: github.com/masanetes/loudspeaker/api/v1
+  version: v1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+version: "3"

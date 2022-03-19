@@ -1,0 +1,20 @@
+# permissions for end users to view loudspeakers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: loudspeaker-viewer-role
+rules:
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers/status
+  verbs:
+  - get
