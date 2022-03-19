@@ -16,7 +16,11 @@ spec:
     singular: loudspeaker
   scope: Namespaced
   versions:
-  - name: v1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.image
+      name: IMAGE
+      type: string
+    name: v1
     schema:
       openAPIV3Schema:
         description: Loudspeaker is the Schema for the loudspeakers API
@@ -36,14 +40,31 @@ spec:
           spec:
             description: LoudspeakerSpec defines the desired state of Loudspeaker
             properties:
-              foo:
-                description: Foo is an example field of Loudspeaker. Edit loudspeaker_types.go
-                  to remove/update
+              image:
                 type: string
+              targets:
+                items:
+                  properties:
+                    listener:
+                      properties:
+                        ignoreEvents:
+                          items:
+                            type: string
+                          type: array
+                        secretsName:
+                          type: string
+                        type:
+                          description: ListenerType +kubebuilder:validation:Enum=sentry
+                          type: string
+                      type: object
+                    namespace:
+                      type: string
+                  type: object
+                type: array
             type: object
           status:
-            description: LoudspeakerStatus defines the observed state of Loudspeaker
-            type: object
+            description: LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy
+            type: string
         type: object
     served: true
     storage: true

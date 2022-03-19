@@ -3,5 +3,11 @@ kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  # Add fields here
-  foo: bar
+  targets:
+    - namespace: ""
+      listener:
+        - type: "sentry"
+          secretsName: ""
+          ignoreEvents: [""]
+
+  image: "masanetes/loudspeaker-runtime:v0.0.1"

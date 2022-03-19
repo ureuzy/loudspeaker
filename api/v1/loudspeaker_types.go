@@ -23,23 +23,54 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// ListenerType +kubebuilder:validation:Enum=sentry
+type ListenerType string
+
+const (
+	Sentry = ListenerType("sentry")
+)
+
+type Listener struct {
+	//+kubebuilder:validation:Required
+	Type ListenerType `json:"type,omitempty"`
+	//+kubebuilder:validation:Required
+	SecretsName string `json:"secretsName,omitempty"`
+	//+kubebuilder:validation:Optional
+	IgnoreEvents []string `json:"ignoreEvents,omitempty"`
+}
+
+type Targets struct {
+	//+kubebuilder:validation:Required
+	Namespace string `json:"namespace,omitempty"`
+	//+kubebuilder:validation:Required
+	Listener Listener `json:"listener,omitempty"`
+}
+
 // LoudspeakerSpec defines the desired state of Loudspeaker
 type LoudspeakerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Loudspeaker. Edit loudspeaker_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+
+	//+kubebuilder:validation:Required
+	Targets []Targets `json:"targets,omitempty"`
+	//+kubebuilder:validation:Required
+	Image string `json:"image,omitempty"`
 }
 
-// LoudspeakerStatus defines the observed state of Loudspeaker
-type LoudspeakerStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-}
+// LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy
+type LoudspeakerStatus string
+
+const (
+	LoudspeakerNotReady  = LoudspeakerStatus("NotReady")
+	LoudspeakerAvailable = LoudspeakerStatus("Available")
+	LoudspeakerHealthy   = LoudspeakerStatus("Healthy")
+)
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="IMAGE",type="string",JSONPath=".spec.image"
 
 // Loudspeaker is the Schema for the loudspeakers API
 type Loudspeaker struct {
