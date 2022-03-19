@@ -9,5 +9,15 @@ spec:
         - type: "sentry"
           secretsName: ""
           ignoreEvents: [""]
+    - namespace: "foo"
+      listeners:
+        - type: "sentry"
+          secretsName: ""
+          ignoreEvents: [""]
+    - namespace: "bar"
+      listeners:
+        - type: "sentry"
+          secretsName: ""
+          ignoreEvents: [""]
 
-  image: "masanetes/loudspeaker-runtime:v0.0.1"
+  image: "busybox"
