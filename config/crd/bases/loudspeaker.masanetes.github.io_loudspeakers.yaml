@@ -45,18 +45,20 @@ spec:
               targets:
                 items:
                   properties:
-                    listener:
-                      properties:
-                        ignoreEvents:
-                          items:
+                    listeners:
+                      items:
+                        properties:
+                          ignoreEvents:
+                            items:
+                              type: string
+                            type: array
+                          secretsName:
                             type: string
-                          type: array
-                        secretsName:
-                          type: string
-                        type:
-                          description: ListenerType +kubebuilder:validation:Enum=sentry
-                          type: string
-                      type: object
+                          type:
+                            description: ListenerType +kubebuilder:validation:Enum=sentry
+                            type: string
+                        type: object
+                      type: array
                     namespace:
                       type: string
                   type: object

@@ -43,7 +43,7 @@ type Targets struct {
 	//+kubebuilder:validation:Required
 	Namespace string `json:"namespace,omitempty"`
 	//+kubebuilder:validation:Required
-	Listener Listener `json:"listener,omitempty"`
+	Listener []Listener `json:"listeners,omitempty"`
 }
 
 // LoudspeakerSpec defines the desired state of Loudspeaker
