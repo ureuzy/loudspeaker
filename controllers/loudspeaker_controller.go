@@ -18,6 +18,21 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	"github.com/masanetes/loudspeaker/pkg/metrics"
+	"k8s.io/apimachinery/pkg/api/equality"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/client-go/tools/record"
+	"k8s.io/utils/pointer"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
+
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+
+	appsv1apply "k8s.io/client-go/applyconfigurations/apps/v1"
+	corev1apply "k8s.io/client-go/applyconfigurations/core/v1"
+	metav1apply "k8s.io/client-go/applyconfigurations/meta/v1"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -30,7 +45,8 @@ import (
 // LoudspeakerReconciler reconciles a Loudspeaker object
 type LoudspeakerReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme   *runtime.Scheme
+	Recorder record.EventRecorder
 }
 
 //+kubebuilder:rbac:groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=get;list;watch;create;update;patch;delete
@@ -50,11 +66,171 @@ type LoudspeakerReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
 func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	logger := log.FromContext(ctx)
 
-	// your logic here
+	var loudspeaker loudspeakerv1.Loudspeaker
+	err := r.Get(ctx, req.NamespacedName, &loudspeaker)
+	if errors.IsNotFound(err) {
+		//r.removeMetrics(loudspeaker)
+		return ctrl.Result{}, nil
+	}
+	if err != nil {
+		logger.Error(err, "unable to get Loudspeaker", "name", req.NamespacedName)
+		return ctrl.Result{}, err
+	}
+
+	if !loudspeaker.ObjectMeta.DeletionTimestamp.IsZero() {
+		return ctrl.Result{}, nil
+	}
+
+	err = r.reconcileDeployment(ctx, loudspeaker)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	return r.updateStatus(ctx, loudspeaker)
+}
+
+func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspeaker loudspeakerv1.Loudspeaker) error {
+	logger := log.FromContext(ctx)
+
+	owner, err := ownerRef(loudspeaker, r.Scheme)
+	if err != nil {
+		return err
+	}
+
+	for _, target := range loudspeaker.Spec.Targets {
+		depName := fmt.Sprintf("%s-%s", loudspeaker.Name, target.GenerateTargetName())
+
+		dep := appsv1apply.Deployment(depName, loudspeaker.Namespace).
+			WithLabels(labelSet(target)).
+			WithOwnerReferences(owner).
+			WithSpec(appsv1apply.DeploymentSpec().
+				WithReplicas(1).
+				WithSelector(metav1apply.LabelSelector().WithMatchLabels(labelSet(target))).
+				WithTemplate(corev1apply.PodTemplateSpec().
+					WithLabels(labelSet(target)).
+					WithSpec(corev1apply.PodSpec().
+						WithContainers(corev1apply.Container().
+							WithName("loudspeaker-runtime").
+							WithImage(loudspeaker.Spec.Image).
+							WithImagePullPolicy(corev1.PullIfNotPresent),
+						),
+					),
+				),
+			)
+
+		obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(dep)
+		if err != nil {
+			return err
+		}
+		patch := &unstructured.Unstructured{
+			Object: obj,
+		}
+
+		var current appsv1.Deployment
+		err = r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: depName}, &current)
+		if err != nil && !errors.IsNotFound(err) {
+			return err
+		}
+
+		currApplyConfig, err := appsv1apply.ExtractDeployment(&current, "loudspeaker-controller")
+		if err != nil {
+			return err
+		}
+
+		if equality.Semantic.DeepEqual(dep, currApplyConfig) {
+			return nil
+		}
+
+		err = r.Patch(ctx, patch, client.Apply, &client.PatchOptions{
+			FieldManager: "loudspeaker-controller",
+			Force:        pointer.Bool(true),
+		})
+
+		if err != nil {
+			logger.Error(err, "unable to create or update Deployment")
+			return err
+		}
+		logger.Info("reconcile Deployment successfully", "name", loudspeaker.Name)
+	}
+
+	return nil
+}
+
+func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker loudspeakerv1.Loudspeaker) (ctrl.Result, error) {
+
+	for _, target := range loudspeaker.Spec.Targets {
+		var dep appsv1.Deployment
+		err := r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: fmt.Sprintf("%s-%s", loudspeaker.Name, target.GenerateTargetName())}, &dep)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		var status loudspeakerv1.LoudspeakerStatus
+		if dep.Status.AvailableReplicas == 0 {
+			status = loudspeakerv1.LoudspeakerNotReady
+		} else if dep.Status.AvailableReplicas == 1 {
+			status = loudspeakerv1.LoudspeakerHealthy
+		} else {
+			status = loudspeakerv1.LoudspeakerAvailable
+		}
+
+		if loudspeaker.Status != status {
+			loudspeaker.Status = status
+			r.setMetrics(loudspeaker)
+
+			r.Recorder.Event(&loudspeaker, corev1.EventTypeNormal, "Updated", fmt.Sprintf("Loudspeaker(%s:%s) updated: %s", loudspeaker.Namespace, loudspeaker.Name, loudspeaker.Status))
+
+			err = r.Status().Update(ctx, &loudspeaker)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+
+		if loudspeaker.Status != loudspeakerv1.LoudspeakerHealthy {
+			return ctrl.Result{Requeue: true}, nil
+		}
+		return ctrl.Result{}, nil
+	}
 
 	return ctrl.Result{}, nil
+}
+
+func labelSet(targets loudspeakerv1.Targets) map[string]string {
+	return map[string]string{"app": fmt.Sprintf("test-%s", targets.Namespace)}
+}
+
+func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1.Loudspeaker) {
+	switch loudspeaker.Status {
+	case loudspeakerv1.LoudspeakerNotReady:
+		metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
+		metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+	case loudspeakerv1.LoudspeakerAvailable:
+		metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
+		metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+	case loudspeakerv1.LoudspeakerHealthy:
+		metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
+	}
+}
+
+func ownerRef(loudspeaker loudspeakerv1.Loudspeaker, scheme *runtime.Scheme) (*metav1apply.OwnerReferenceApplyConfiguration, error) {
+	gvk, err := apiutil.GVKForObject(&loudspeaker, scheme)
+	if err != nil {
+		return nil, err
+	}
+	ref := metav1apply.OwnerReference().
+		WithAPIVersion(gvk.GroupVersion().String()).
+		WithKind(gvk.Kind).
+		WithName(loudspeaker.Name).
+		WithUID(loudspeaker.GetUID()).
+		WithBlockOwnerDeletion(true).
+		WithController(true)
+	return ref, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.

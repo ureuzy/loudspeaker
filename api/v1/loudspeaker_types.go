@@ -46,6 +46,13 @@ type Targets struct {
 	Listener []Listener `json:"listeners,omitempty"`
 }
 
+func (t *Targets) GenerateTargetName() string {
+	if t.Namespace == "" {
+		return "all"
+	}
+	return t.Namespace
+}
+
 // LoudspeakerSpec defines the desired state of Loudspeaker
 type LoudspeakerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
