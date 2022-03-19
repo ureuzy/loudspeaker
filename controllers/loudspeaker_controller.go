@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+
 	"github.com/masanetes/loudspeaker/pkg/metrics"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
