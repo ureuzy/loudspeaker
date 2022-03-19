@@ -70,6 +70,7 @@ const (
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:shortName=lo
 //+kubebuilder:printcolumn:name="IMAGE",type="string",JSONPath=".spec.image"
 
 // Loudspeaker is the Schema for the loudspeakers API
