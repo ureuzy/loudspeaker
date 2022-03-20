@@ -12,10 +12,10 @@ B -->|Events| D[Listener2]
 B -->|Events| E[Listener3]
 ```
 
-## Support Lister
+## Supports Lister
 
 - Sentry
 
-## Example CRDs
+## Sample CRDs
 
 https://github.com/masanetes/loudspeaker/blob/master/config/samples/loudspeaker_v1_loudspeaker.yaml
