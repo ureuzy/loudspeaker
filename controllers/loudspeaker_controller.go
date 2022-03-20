@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/masanetes/loudspeaker/pkg/metrics"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -30,7 +29,6 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-
 	appsv1apply "k8s.io/client-go/applyconfigurations/apps/v1"
 	corev1apply "k8s.io/client-go/applyconfigurations/core/v1"
 	metav1apply "k8s.io/client-go/applyconfigurations/meta/v1"
@@ -199,23 +197,23 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 }
 
 func labelSet(targets loudspeakerv1.Targets) map[string]string {
-	return map[string]string{"app": fmt.Sprintf("test-%s", targets.Namespace)}
+	return map[string]string{"app": fmt.Sprintf("test%s", targets.Namespace)}
 }
 
 func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1.Loudspeaker) {
 	switch loudspeaker.Status {
 	case loudspeakerv1.LoudspeakerNotReady:
-		metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
-		metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
-		metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
+		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		//metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
 	case loudspeakerv1.LoudspeakerAvailable:
-		metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
-		metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
-		metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
+		//metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
 	case loudspeakerv1.LoudspeakerHealthy:
-		metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
-		metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
-		metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
+		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
+		//metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
 	}
 }
 
@@ -238,5 +236,6 @@ func ownerRef(loudspeaker loudspeakerv1.Loudspeaker, scheme *runtime.Scheme) (*m
 func (r *LoudspeakerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&loudspeakerv1.Loudspeaker{}).
+		Owns(&appsv1.Deployment{}).
 		Complete(r)
 }
