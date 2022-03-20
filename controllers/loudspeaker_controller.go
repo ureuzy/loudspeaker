@@ -99,7 +99,7 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 	}
 
 	for _, target := range loudspeaker.Spec.Targets {
-		depName := fmt.Sprintf("%s-%s", loudspeaker.Name, target.GenerateTargetName())
+		depName := fmt.Sprintf("%s-%s", loudspeaker.Name, target.GenerateName())
 
 		dep := appsv1apply.Deployment(depName, loudspeaker.Namespace).
 			WithLabels(labelSet(target)).
@@ -161,7 +161,7 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 
 	for _, target := range loudspeaker.Spec.Targets {
 		var dep appsv1.Deployment
-		err := r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: fmt.Sprintf("%s-%s", loudspeaker.Name, target.GenerateTargetName())}, &dep)
+		err := r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: fmt.Sprintf("%s-%s", loudspeaker.Name, target.GenerateName())}, &dep)
 		if err != nil {
 			return ctrl.Result{}, err
 		}

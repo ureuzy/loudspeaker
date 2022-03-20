@@ -46,7 +46,7 @@ type Targets struct {
 	Listener []Listener `json:"listeners,omitempty"`
 }
 
-func (t *Targets) GenerateTargetName() string {
+func (t *Targets) GenerateName() string {
 	if t.Namespace == "" {
 		return "all"
 	}
