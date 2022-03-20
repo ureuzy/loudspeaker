@@ -1,6 +1,6 @@
 # Loudspeaker
 
-Delivery kubernetes events for Listener 
+Delivery kubernetes events for Listeners. 
 
 ```mermaid
 flowchart LR
