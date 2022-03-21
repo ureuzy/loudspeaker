@@ -139,7 +139,7 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 		}
 
 		if equality.Semantic.DeepEqual(dep, currApplyConfig) {
-			return nil
+			continue
 		}
 
 		err = r.Patch(ctx, patch, client.Apply, &client.PatchOptions{
