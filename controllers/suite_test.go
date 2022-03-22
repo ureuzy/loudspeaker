@@ -18,7 +18,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	loudspeakerv1 "github.com/masanetes/loudspeaker/api/v1"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -30,6 +29,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+
+	loudspeakerv1 "github.com/masanetes/loudspeaker/api/v1"
 	//+kubebuilder:scaffold:imports
 )
 
