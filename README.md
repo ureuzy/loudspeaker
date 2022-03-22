@@ -1,5 +1,7 @@
 # Loudspeaker
 
+[![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml)
+
 Delivery kubernetes events for Listeners. 
 
 ```mermaid
