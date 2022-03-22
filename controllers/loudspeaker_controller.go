@@ -110,11 +110,11 @@ func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspea
 			cm.Data = make(map[string]string)
 		}
 
-		obj, err := yaml.Marshal(loudspeaker.Spec.Targets)
+		obj, err := yaml.Marshal(loudspeaker.Spec.Listeners)
 		if err != nil {
 			return err
 		}
-		cm.Data["targets"] = string(obj)
+		cm.Data["listeners"] = string(obj)
 
 		return ctrl.SetControllerReference(&loudspeaker, cm, r.Scheme)
 	})
@@ -138,6 +138,29 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 	}
 	depName := fmt.Sprintf("%s-%s", loudspeaker.Name, "forwarder")
 
+	var volumes []*corev1apply.VolumeApplyConfiguration
+	var volumeMounts []*corev1apply.VolumeMountApplyConfiguration
+	for _, listener := range loudspeaker.Spec.Listeners {
+		name := listener.Credentials
+		volume := corev1apply.VolumeApplyConfiguration{
+			Name: &name,
+			VolumeSourceApplyConfiguration: corev1apply.VolumeSourceApplyConfiguration{
+				Secret: &corev1apply.SecretVolumeSourceApplyConfiguration{
+					SecretName: &name,
+				},
+			},
+		}
+		readOnly := true
+		mountPath := fmt.Sprintf("/loudspeaker/creds/%s/%s", listener.Type, listener.Credentials)
+		volumeMount := corev1apply.VolumeMountApplyConfiguration{
+			Name:      &name,
+			ReadOnly:  &readOnly,
+			MountPath: &mountPath,
+		}
+		volumes = append(volumes, &volume)
+		volumeMounts = append(volumeMounts, &volumeMount)
+	}
+
 	dep := appsv1apply.Deployment(depName, loudspeaker.Namespace).
 		WithLabels(labelSet(loudspeaker)).
 		WithOwnerReferences(owner).
@@ -150,8 +173,10 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 					WithContainers(corev1apply.Container().
 						WithName("loudspeaker-runtime").
 						WithImage(loudspeaker.Spec.Image).
-						WithImagePullPolicy(corev1.PullIfNotPresent),
-					),
+						WithImagePullPolicy(corev1.PullIfNotPresent).
+						WithVolumeMounts(volumeMounts...),
+					).
+					WithVolumes(volumes...),
 				),
 			),
 		)

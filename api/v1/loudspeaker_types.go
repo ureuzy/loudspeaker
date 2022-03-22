@@ -30,21 +30,23 @@ const (
 	Sentry = ListenerType("sentry")
 )
 
+type Watch struct {
+	//+kubebuilder:validation:Required
+	Namespace string `json:"namespace"`
+
+	Ignore []string `json:"ignore,omitempty"`
+}
+
 type Listener struct {
 	//+kubebuilder:validation:Required
 	Type ListenerType `json:"type,omitempty"`
 	//+kubebuilder:validation:Required
-	Credentials string `json:"credentials,omitempty"`
+	Credentials string `json:"credentials"`
+	//+kubebuilder:validation:Required
+	Watch []Watch `json:"watch,omitempty"`
 }
 
-type Target struct {
-	//+kubebuilder:validation:Required
-	Namespace string `json:"namespace,omitempty"`
-	//+kubebuilder:validation:Optional
-	Ignore []string `json:"ignore,omitempty"`
-	//+kubebuilder:validation:Required
-	Listeners []Listener `json:"listeners,omitempty"`
-}
+type Listeners []Listener
 
 // LoudspeakerSpec defines the desired state of Loudspeaker
 type LoudspeakerSpec struct {
@@ -54,9 +56,9 @@ type LoudspeakerSpec struct {
 	// Foo is an example field of Loudspeaker. Edit loudspeaker_types.go to remove/update
 
 	//+kubebuilder:validation:Required
-	Targets []Target `json:"targets,omitempty"`
+	Listeners Listeners `json:"listeners,omitempty"`
 	//+kubebuilder:validation:Required
-	Image string `json:"image,omitempty"`
+	Image string `json:"image"`
 }
 
 // LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy

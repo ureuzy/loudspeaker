@@ -1,13 +1,33 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: loudspeaker-sentry
+data:
+  sentry: c3lzdGVtOmJvb3RzdHJhcHBlcnM6a3ViZWFkbTpkZWZhdWx0LW5vZGUtdG9rZW4=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hoge
+data:
+  sentry: c3lzdGVtOmJvb3RzdHJhcHBlcnM6a3ViZWFkbTpkZWZhdWx0LW5vZGUtdG9rZW4=
+---
 apiVersion: loudspeaker.masanetes.github.io/v1
 kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  targets:
-    - namespace: ""
-      ignore: [""]
-      listeners:
-        - type: "sentry"
-          credentials: ""
+  listeners:
+    - type: "sentry"
+      credentials: "loudspeaker-sentry"
+      watch:
+        - namespace: "default"
+          ignore: ["BackoffLimitExceeded"]
+
+    - type: "hoge"
+      credentials: "hoge"
+      watch:
+        - namespace: "default"
+          ignore: ["BackoffLimitExceeded"]
 
   image: "nginx:latest"

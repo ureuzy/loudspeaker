@@ -44,27 +44,33 @@ spec:
             properties:
               image:
                 type: string
-              targets:
+              listeners:
                 items:
                   properties:
-                    ignore:
-                      items:
-                        type: string
-                      type: array
-                    listeners:
+                    credentials:
+                      type: string
+                    type:
+                      description: ListenerType +kubebuilder:validation:Enum=sentry
+                      type: string
+                    watch:
                       items:
                         properties:
-                          credentials:
+                          ignore:
+                            items:
+                              type: string
+                            type: array
+                          namespace:
                             type: string
-                          type:
-                            description: ListenerType +kubebuilder:validation:Enum=sentry
-                            type: string
+                        required:
+                        - namespace
                         type: object
                       type: array
-                    namespace:
-                      type: string
+                  required:
+                  - credentials
                   type: object
                 type: array
+            required:
+            - image
             type: object
           status:
             description: LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy
