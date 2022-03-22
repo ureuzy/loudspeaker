@@ -2,7 +2,7 @@
 
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml)
 
-Delivery kubernetes events for Listeners. 
+Loudspeaker retrieves Events from KubeAPI and sends them to the pre-registered Listeners.
 
 ```mermaid
 flowchart LR
