@@ -5,19 +5,9 @@ metadata:
 spec:
   targets:
     - namespace: ""
+      ignore: [""]
       listeners:
         - type: "sentry"
-          secretsName: ""
-          ignoreEvents: [""]
-    - namespace: "foo"
-      listeners:
-        - type: "sentry"
-          secretsName: ""
-          ignoreEvents: [""]
-    - namespace: "bar"
-      listeners:
-        - type: "sentry"
-          secretsName: ""
-          ignoreEvents: [""]
+          credentials: ""
 
-  image: "busybox"
+  image: "nginx:latest"

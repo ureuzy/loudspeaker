@@ -47,14 +47,14 @@ spec:
               targets:
                 items:
                   properties:
+                    ignore:
+                      items:
+                        type: string
+                      type: array
                     listeners:
                       items:
                         properties:
-                          ignoreEvents:
-                            items:
-                              type: string
-                            type: array
-                          secretsName:
+                          credentials:
                             type: string
                           type:
                             description: ListenerType +kubebuilder:validation:Enum=sentry

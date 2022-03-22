@@ -34,23 +34,16 @@ type Listener struct {
 	//+kubebuilder:validation:Required
 	Type ListenerType `json:"type,omitempty"`
 	//+kubebuilder:validation:Required
-	SecretsName string `json:"secretsName,omitempty"`
-	//+kubebuilder:validation:Optional
-	IgnoreEvents []string `json:"ignoreEvents,omitempty"`
+	Credentials string `json:"credentials,omitempty"`
 }
 
-type Targets struct {
+type Target struct {
 	//+kubebuilder:validation:Required
 	Namespace string `json:"namespace,omitempty"`
+	//+kubebuilder:validation:Optional
+	Ignore []string `json:"ignore,omitempty"`
 	//+kubebuilder:validation:Required
-	Listener []Listener `json:"listeners,omitempty"`
-}
-
-func (t *Targets) GenerateName() string {
-	if t.Namespace == "" {
-		return "all"
-	}
-	return t.Namespace
+	Listeners []Listener `json:"listeners,omitempty"`
 }
 
 // LoudspeakerSpec defines the desired state of Loudspeaker
@@ -61,7 +54,7 @@ type LoudspeakerSpec struct {
 	// Foo is an example field of Loudspeaker. Edit loudspeaker_types.go to remove/update
 
 	//+kubebuilder:validation:Required
-	Targets []Targets `json:"targets,omitempty"`
+	Targets []Target `json:"targets,omitempty"`
 	//+kubebuilder:validation:Required
 	Image string `json:"image,omitempty"`
 }
