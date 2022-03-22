@@ -1,14 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: loudspeaker-sentry
-data:
-  sentry: c3lzdGVtOmJvb3RzdHJhcHBlcnM6a3ViZWFkbTpkZWZhdWx0LW5vZGUtdG9rZW4=
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hoge
+  name: sample-secrets
 data:
   sentry: c3lzdGVtOmJvb3RzdHJhcHBlcnM6a3ViZWFkbTpkZWZhdWx0LW5vZGUtdG9rZW4=
 ---
@@ -19,15 +12,12 @@ metadata:
 spec:
   listeners:
     - type: "sentry"
-      credentials: "loudspeaker-sentry"
+      credentials: "sample-secrets"
       watch:
         - namespace: "default"
           ignore: ["BackoffLimitExceeded"]
+        - namespace: "sample"
+          ignore: ["Unhealthy"]
 
-    - type: "hoge"
-      credentials: "hoge"
-      watch:
-        - namespace: "default"
-          ignore: ["BackoffLimitExceeded"]
 
   image: "nginx:latest"

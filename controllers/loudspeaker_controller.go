@@ -101,9 +101,15 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspeaker loudspeakerv1.Loudspeaker) error {
 	logger := log.FromContext(ctx)
 
+	applyConfig, err := loudspeaker.ToJsonString()
+	if err != nil {
+		return err
+	}
+
 	cm := &corev1.ConfigMap{}
 	cm.SetNamespace(loudspeaker.Namespace)
-	cm.SetName("targets-" + loudspeaker.Name)
+	cm.SetName(loudspeaker.Name + "-config")
+	cm.SetAnnotations(map[string]string{"loudspeaker-apply-config": applyConfig})
 
 	op, err := ctrl.CreateOrUpdate(ctx, r.Client, cm, func() error {
 		if cm.Data == nil {
@@ -150,18 +156,22 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 				},
 			},
 		}
-		readOnly := true
-		mountPath := fmt.Sprintf("/loudspeaker/creds/%s/%s", listener.Type, listener.Credentials)
 		volumeMount := corev1apply.VolumeMountApplyConfiguration{
 			Name:      &name,
-			ReadOnly:  &readOnly,
-			MountPath: &mountPath,
+			ReadOnly:  pointer.Bool(true),
+			MountPath: pointer.String(fmt.Sprintf("/loudspeaker/creds/%s/%s", listener.Type, listener.Credentials)),
 		}
 		volumes = append(volumes, &volume)
 		volumeMounts = append(volumeMounts, &volumeMount)
 	}
 
+	applyConfig, err := loudspeaker.ToJsonString()
+	if err != nil {
+		return err
+	}
+
 	dep := appsv1apply.Deployment(depName, loudspeaker.Namespace).
+		WithAnnotations(map[string]string{"loudspeaker-apply-config": applyConfig}).
 		WithLabels(labelSet(loudspeaker)).
 		WithOwnerReferences(owner).
 		WithSpec(appsv1apply.DeploymentSpec().

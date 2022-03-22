@@ -18,6 +18,7 @@ package v1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/json"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
@@ -82,6 +83,14 @@ type Loudspeaker struct {
 
 	Spec   LoudspeakerSpec   `json:"spec,omitempty"`
 	Status LoudspeakerStatus `json:"status,omitempty"`
+}
+
+func (l *Loudspeaker) ToJsonString() (string, error) {
+	b, err := json.Marshal(l.Spec)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }
 
 //+kubebuilder:object:root=true
