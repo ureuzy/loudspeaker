@@ -17,10 +17,15 @@ limitations under the License.
 package v1
 
 import (
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	"github.com/masanetes/loudspeaker/pkg/constants"
 )
 
 // log is for logging in this package.
@@ -42,7 +47,7 @@ var _ webhook.Defaulter = &Loudspeaker{}
 func (r *Loudspeaker) Default() {
 	loudspeakerlog.Info("default", "name", r.Name)
 
-	// TODO(user): fill in your defaulting logic.
+	r.Spec.Image = constants.DefaultImage
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
@@ -54,16 +59,14 @@ var _ webhook.Validator = &Loudspeaker{}
 func (r *Loudspeaker) ValidateCreate() error {
 	loudspeakerlog.Info("validate create", "name", r.Name)
 
-	// TODO(user): fill in your validation logic upon object creation.
-	return nil
+	return r.validateLoudspeaker()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *Loudspeaker) ValidateUpdate(old runtime.Object) error {
 	loudspeakerlog.Info("validate update", "name", r.Name)
 
-	// TODO(user): fill in your validation logic upon object update.
-	return nil
+	return r.validateLoudspeaker()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
@@ -71,5 +74,25 @@ func (r *Loudspeaker) ValidateDelete() error {
 	loudspeakerlog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
+	return nil
+}
+
+func (r *Loudspeaker) validateLoudspeaker() error {
+	var errs field.ErrorList
+
+	if len(r.Spec.Image) > 0 {
+		errs = append(errs, field.Required(field.NewPath("spec", "image"), "hogehoge."))
+	}
+
+	if r.Spec.Listeners.IsDuplicateCredentials() {
+		errs = append(errs, field.Required(field.NewPath("spec", "listeners", "credentials"), "same secrets must not be specified."))
+	}
+
+	if len(errs) > 0 {
+		err := apierrors.NewInvalid(schema.GroupKind{Group: GroupVersion.Group, Kind: "Loudspeaker"}, r.Name, errs)
+		loudspeakerlog.Error(err, "validation error", "name", r.Name)
+		return err
+	}
+
 	return nil
 }

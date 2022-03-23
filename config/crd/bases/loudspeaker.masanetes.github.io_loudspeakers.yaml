@@ -69,8 +69,6 @@ spec:
                   - credentials
                   type: object
                 type: array
-            required:
-            - image
             type: object
           status:
             description: LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy

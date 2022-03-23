@@ -49,6 +49,18 @@ type Listener struct {
 
 type Listeners []Listener
 
+func (l *Listeners) IsDuplicateCredentials() bool {
+	m := map[string]bool{}
+	for _, v := range *l {
+		if !m[v.Credentials] {
+			m[v.Credentials] = true
+		} else {
+			return true
+		}
+	}
+	return false
+}
+
 // LoudspeakerSpec defines the desired state of Loudspeaker
 type LoudspeakerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
@@ -58,8 +70,8 @@ type LoudspeakerSpec struct {
 
 	//+kubebuilder:validation:Required
 	Listeners Listeners `json:"listeners,omitempty"`
-	//+kubebuilder:validation:Required
-	Image string `json:"image"`
+	//+optional
+	Image string `json:"image,omitempty"`
 }
 
 // LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy

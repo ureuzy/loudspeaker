@@ -1,10 +1,9 @@
-
 apiVersion: loudspeaker.masanetes.github.io/v1
 kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  image: "nginx:latest"
+#  image: "nginx:latest"
   listeners:
     - type: "sentry"
       credentials: "sentry-secrets"
