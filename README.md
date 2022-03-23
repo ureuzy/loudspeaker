@@ -1,7 +1,7 @@
 # Loudspeaker
 
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml)
-[![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)
+[![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/report/github.com/masanetes/loudspeaker)
 [![codecov](https://codecov.io/gh/masanetes/loudspeaker/branch/master/graph/badge.svg?token=9HT5CC8XDK)](https://codecov.io/gh/masanetes/loudspeaker)
 
 Loudspeaker retrieves Events from KubeAPI and sends them to the pre-registered Listeners.
