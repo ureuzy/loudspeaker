@@ -178,7 +178,10 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 						WithName("loudspeaker-runtime").
 						WithImage(loudspeaker.Spec.Image).
 						WithImagePullPolicy(corev1.PullIfNotPresent).
-						WithVolumeMounts(volumeMounts...),
+						WithVolumeMounts(volumeMounts...).
+						WithEnv(&corev1apply.EnvVarApplyConfiguration{
+							Name:  pointer.String("CONFIGMAP"),
+							Value: pointer.String(loudspeaker.Name + "-config")}),
 					).
 					WithVolumes(volumes...),
 				),

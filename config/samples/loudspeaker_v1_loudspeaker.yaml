@@ -4,7 +4,7 @@ kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  image: "loudspeaker-runtime:latest"
+  image: "nginx:latest"
   listeners:
     - type: "sentry"
       credentials: "sentry-secrets"

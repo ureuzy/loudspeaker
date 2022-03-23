@@ -88,6 +88,8 @@ var _ = Describe("Loudspeaker controller", func() {
 		Eventually(func() error {
 			return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-forwarder"}, &dep)
 		}).Should(Succeed())
+		Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Name).Should(Equal("CONFIGMAP"))
+		Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Value).Should(Equal("sample-config"))
 		Expect(dep.Spec.Replicas).Should(Equal(pointer.Int32Ptr(1)))
 		Expect(dep.Spec.Template.Spec.Containers[0].Image).Should(Equal("nginx:latest"))
 	})
