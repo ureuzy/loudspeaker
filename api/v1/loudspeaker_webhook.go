@@ -45,7 +45,9 @@ var _ webhook.Defaulter = &Loudspeaker{}
 func (r *Loudspeaker) Default() {
 	loudspeakerlog.Info("default", "name", r.Name)
 
-	r.Spec.Image = "loudspeaker-runtime:latest"
+	if len(r.Spec.Image) == 0 {
+		r.Spec.Image = "loudspeaker-runtime:latest"
+	}
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
