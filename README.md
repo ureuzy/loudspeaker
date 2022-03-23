@@ -54,7 +54,7 @@ spec:
   listeners:
     - type: "sentry"
       credentials: "sentry-secrets"
-      watch:
+      subscribes:
         - namespace: "default"
           ignore: ["BackoffLimitExceeded"]
         - namespace: "sample"
