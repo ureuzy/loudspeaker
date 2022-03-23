@@ -2,8 +2,18 @@ name: test
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'api/**'
+      - 'config/**'
+      - 'controllers/**'
+      - 'pkg/**'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'api/**'
+      - 'config/**'
+      - 'controllers/**'
+      - 'pkg/**'
 
 jobs:
   test:
