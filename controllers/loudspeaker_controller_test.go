@@ -122,7 +122,7 @@ func newLoudSpeaker() *loudspeakerv1.Loudspeaker {
 				{
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Watch: []loudspeakerv1.Watch{
+					Subscribes: []loudspeakerv1.Subscribe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},

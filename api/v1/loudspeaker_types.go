@@ -31,7 +31,7 @@ const (
 	Sentry = ListenerType("sentry")
 )
 
-type Watch struct {
+type Subscribe struct {
 	//+kubebuilder:validation:Required
 	Namespace string `json:"namespace"`
 
@@ -44,7 +44,7 @@ type Listener struct {
 	//+kubebuilder:validation:Required
 	Credentials string `json:"credentials"`
 	//+kubebuilder:validation:Required
-	Watch []Watch `json:"watch,omitempty"`
+	Subscribes []Subscribe `json:"subscribes,omitempty"`
 }
 
 type Listeners []Listener
