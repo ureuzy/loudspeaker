@@ -46,11 +46,15 @@ spec:
                 type: string
               listeners:
                 items:
+                  description: Listener defines configuration the Listener to which
+                    events are sent
                   properties:
                     credentials:
                       type: string
                     subscribes:
                       items:
+                        description: Subscribe defines configuration of subscribing
+                          to events
                         properties:
                           ignore:
                             items:
@@ -63,15 +67,27 @@ spec:
                         type: object
                       type: array
                     type:
-                      description: ListenerType +kubebuilder:validation:Enum=sentry
+                      description: ListenerType defines the types of Listener that
+                        can be specified
+                      enum:
+                      - sentry
                       type: string
                   required:
                   - credentials
+                  - subscribes
+                  - type
                   type: object
                 type: array
+            required:
+            - listeners
             type: object
           status:
-            description: LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy
+            description: LoudspeakerStatus defines the types of LoudspeakerStatus
+              that can be specified
+            enum:
+            - NotReady
+            - Available
+            - Healthy
             type: string
         type: object
     served: true

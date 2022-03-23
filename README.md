@@ -1,5 +1,6 @@
 # Loudspeaker
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/masanetes/loudspeaker.svg)](https://pkg.go.dev/github.com/masanetes/loudspeaker)
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yml)
 [![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/report/github.com/masanetes/loudspeaker)
 [![codecov](https://codecov.io/gh/masanetes/loudspeaker/branch/master/graph/badge.svg?token=9HT5CC8XDK)](https://codecov.io/gh/masanetes/loudspeaker)

@@ -3,12 +3,12 @@ kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-#  image: "nginx:latest"
+  image: "loudspeaker-runtime:latest"
   listeners:
     - type: "sentry"
       credentials: "sentry-secrets"
       subscribes:
-        - namespace: "default"
+        - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]
-        - namespace: "sample"
+        - namespace: "default"
           ignore: ["Unhealthy"]

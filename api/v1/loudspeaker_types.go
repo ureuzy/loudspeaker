@@ -24,13 +24,14 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// ListenerType +kubebuilder:validation:Enum=sentry
+// ListenerType defines the types of Listener that can be specified
 type ListenerType string
 
 const (
 	Sentry = ListenerType("sentry")
 )
 
+// Subscribe defines configuration of subscribing to events
 type Subscribe struct {
 	//+kubebuilder:validation:Required
 	Namespace string `json:"namespace"`
@@ -38,17 +39,20 @@ type Subscribe struct {
 	Ignore []string `json:"ignore,omitempty"`
 }
 
+// Listener defines configuration the Listener to which events are sent
 type Listener struct {
+	//+kubebuilder:validation:Enum:=sentry
 	//+kubebuilder:validation:Required
-	Type ListenerType `json:"type,omitempty"`
+	Type ListenerType `json:"type"`
 	//+kubebuilder:validation:Required
 	Credentials string `json:"credentials"`
 	//+kubebuilder:validation:Required
-	Subscribes []Subscribe `json:"subscribes,omitempty"`
+	Subscribes []Subscribe `json:"subscribes"`
 }
 
 type Listeners []Listener
 
+// IsDuplicateCredentials is checks whether the same thing is set in each listener's secrets
 func (l *Listeners) IsDuplicateCredentials() bool {
 	m := map[string]bool{}
 	for _, v := range *l {
@@ -66,15 +70,13 @@ type LoudspeakerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of Loudspeaker. Edit loudspeaker_types.go to remove/update
-
 	//+kubebuilder:validation:Required
-	Listeners Listeners `json:"listeners,omitempty"`
+	Listeners Listeners `json:"listeners"`
 	//+optional
 	Image string `json:"image,omitempty"`
 }
 
-// LoudspeakerStatus +kubebuilder:validation:Enum=NotReady;Available;Healthy
+// LoudspeakerStatus defines the types of LoudspeakerStatus that can be specified
 type LoudspeakerStatus string
 
 const (
@@ -93,7 +95,9 @@ type Loudspeaker struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   LoudspeakerSpec   `json:"spec,omitempty"`
+	Spec LoudspeakerSpec `json:"spec,omitempty"`
+	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:Enum=NotReady;Available;Healthy
 	Status LoudspeakerStatus `json:"status,omitempty"`
 }
 

@@ -24,8 +24,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
-
-	"github.com/masanetes/loudspeaker/pkg/constants"
 )
 
 // log is for logging in this package.
@@ -47,7 +45,7 @@ var _ webhook.Defaulter = &Loudspeaker{}
 func (r *Loudspeaker) Default() {
 	loudspeakerlog.Info("default", "name", r.Name)
 
-	r.Spec.Image = constants.DefaultImage
+	r.Spec.Image = "loudspeaker-runtime:latest"
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
@@ -80,12 +78,8 @@ func (r *Loudspeaker) ValidateDelete() error {
 func (r *Loudspeaker) validateLoudspeaker() error {
 	var errs field.ErrorList
 
-	if len(r.Spec.Image) > 0 {
-		errs = append(errs, field.Required(field.NewPath("spec", "image"), "hogehoge."))
-	}
-
 	if r.Spec.Listeners.IsDuplicateCredentials() {
-		errs = append(errs, field.Required(field.NewPath("spec", "listeners", "credentials"), "same secrets must not be specified."))
+		errs = append(errs, field.Duplicate(field.NewPath("spec", "listeners", "credentials"), "same secrets must not be specified."))
 	}
 
 	if len(errs) > 0 {
