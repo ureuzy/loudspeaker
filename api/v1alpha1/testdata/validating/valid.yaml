@@ -1,7 +1,7 @@
-apiVersion: loudspeaker.masanetes.github.io/v1
+apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
-  name: without-namespace
+  name: valid
   namespace: default
 spec:
   image: "loudspeaker-runtime:latest"
@@ -11,4 +11,5 @@ spec:
       subscribes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]
-        - ignore: ["Unhealthy"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]

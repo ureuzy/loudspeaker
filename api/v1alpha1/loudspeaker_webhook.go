@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1
+package v1alpha1
 
 import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -37,7 +37,7 @@ func (r *Loudspeaker) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-//+kubebuilder:webhook:path=/mutate-loudspeaker-masanetes-github-io-v1-loudspeaker,mutating=true,failurePolicy=fail,sideEffects=None,groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=create;update,versions=v1,name=mloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
+//+kubebuilder:webhook:path=/mutate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker,mutating=true,failurePolicy=fail,sideEffects=None,groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=create;update,versions=v1alpha1,name=mloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
 
 var _ webhook.Defaulter = &Loudspeaker{}
 
@@ -51,7 +51,7 @@ func (r *Loudspeaker) Default() {
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-//+kubebuilder:webhook:path=/validate-loudspeaker-masanetes-github-io-v1-loudspeaker,mutating=false,failurePolicy=fail,sideEffects=None,groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=create;update,versions=v1,name=vloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
+//+kubebuilder:webhook:path=/validate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker,mutating=false,failurePolicy=fail,sideEffects=None,groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=create;update,versions=v1alpha1,name=vloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
 
 var _ webhook.Validator = &Loudspeaker{}
 

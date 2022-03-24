@@ -38,7 +38,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	loudspeakerv1 "github.com/masanetes/loudspeaker/api/v1"
+	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
 )
 
 // LoudspeakerReconciler reconciles a Loudspeaker object
@@ -68,7 +68,7 @@ type LoudspeakerReconciler struct {
 func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
-	var loudspeaker loudspeakerv1.Loudspeaker
+	var loudspeaker loudspeakerv1alpha1.Loudspeaker
 	err := r.Get(ctx, req.NamespacedName, &loudspeaker)
 	if errors.IsNotFound(err) {
 		//r.removeMetrics(loudspeaker)
@@ -96,7 +96,7 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	return r.updateStatus(ctx, loudspeaker)
 }
 
-func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspeaker loudspeakerv1.Loudspeaker) error {
+func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) error {
 	logger := log.FromContext(ctx)
 
 	cm := &corev1.ConfigMap{}
@@ -127,7 +127,7 @@ func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspea
 	return nil
 }
 
-func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspeaker loudspeakerv1.Loudspeaker) error {
+func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) error {
 	logger := log.FromContext(ctx)
 
 	owner, err := ownerRef(loudspeaker, r.Scheme)
@@ -223,7 +223,7 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 	return nil
 }
 
-func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker loudspeakerv1.Loudspeaker) (ctrl.Result, error) {
+func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) (ctrl.Result, error) {
 
 	var dep appsv1.Deployment
 	err := r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: fmt.Sprintf("%s-%s", loudspeaker.Name, "forwarder")}, &dep)
@@ -231,13 +231,13 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 		return ctrl.Result{}, err
 	}
 
-	var status loudspeakerv1.LoudspeakerStatus
+	var status loudspeakerv1alpha1.LoudspeakerStatus
 	if dep.Status.AvailableReplicas == 0 {
-		status = loudspeakerv1.LoudspeakerNotReady
+		status = loudspeakerv1alpha1.LoudspeakerNotReady
 	} else if dep.Status.AvailableReplicas == 1 {
-		status = loudspeakerv1.LoudspeakerHealthy
+		status = loudspeakerv1alpha1.LoudspeakerHealthy
 	} else {
-		status = loudspeakerv1.LoudspeakerAvailable
+		status = loudspeakerv1alpha1.LoudspeakerAvailable
 	}
 
 	if loudspeaker.Status != status {
@@ -252,34 +252,34 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 		}
 	}
 
-	if loudspeaker.Status != loudspeakerv1.LoudspeakerHealthy {
+	if loudspeaker.Status != loudspeakerv1alpha1.LoudspeakerHealthy {
 		return ctrl.Result{Requeue: true}, nil
 	}
 	return ctrl.Result{}, nil
 }
 
-func labelSet(targets loudspeakerv1.Loudspeaker) map[string]string {
+func labelSet(targets loudspeakerv1alpha1.Loudspeaker) map[string]string {
 	return map[string]string{"app": fmt.Sprintf("test%s", targets.Namespace)}
 }
 
-func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1.Loudspeaker) {
+func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1alpha1.Loudspeaker) {
 	switch loudspeaker.Status {
-	case loudspeakerv1.LoudspeakerNotReady:
+	case loudspeakerv1alpha1.LoudspeakerNotReady:
 		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
 		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
 		//metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
-	case loudspeakerv1.LoudspeakerAvailable:
+	case loudspeakerv1alpha1.LoudspeakerAvailable:
 		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
 		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
 		//metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
-	case loudspeakerv1.LoudspeakerHealthy:
+	case loudspeakerv1alpha1.LoudspeakerHealthy:
 		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
 		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
 		//metrics.HealthyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
 	}
 }
 
-func ownerRef(loudspeaker loudspeakerv1.Loudspeaker, scheme *runtime.Scheme) (*metav1apply.OwnerReferenceApplyConfiguration, error) {
+func ownerRef(loudspeaker loudspeakerv1alpha1.Loudspeaker, scheme *runtime.Scheme) (*metav1apply.OwnerReferenceApplyConfiguration, error) {
 	gvk, err := apiutil.GVKForObject(&loudspeaker, scheme)
 	if err != nil {
 		return nil, err
@@ -297,7 +297,7 @@ func ownerRef(loudspeaker loudspeakerv1.Loudspeaker, scheme *runtime.Scheme) (*m
 // SetupWithManager sets up the controller with the Manager.
 func (r *LoudspeakerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&loudspeakerv1.Loudspeaker{}).
+		For(&loudspeakerv1alpha1.Loudspeaker{}).
 		Owns(&appsv1.Deployment{}).
 		Complete(r)
 }

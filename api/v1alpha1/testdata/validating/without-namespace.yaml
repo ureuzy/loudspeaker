@@ -1,15 +1,14 @@
-apiVersion: loudspeaker.masanetes.github.io/v1
+apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
-  name: unsupported-listener-type
+  name: without-namespace
   namespace: default
 spec:
   image: "loudspeaker-runtime:latest"
   listeners:
-    - type: "foo"
+    - type: "sentry"
       credentials: "sentry-secrets"
       subscribes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]
-        - namespace: "default"
-          ignore: ["Unhealthy"]
+        - ignore: ["Unhealthy"]

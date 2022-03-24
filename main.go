@@ -30,7 +30,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	loudspeakerv1 "github.com/masanetes/loudspeaker/api/v1"
+	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
 	"github.com/masanetes/loudspeaker/controllers"
 	//+kubebuilder:scaffold:imports
 )
@@ -43,7 +43,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(loudspeakerv1.AddToScheme(scheme))
+	utilruntime.Must(loudspeakerv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -85,7 +85,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Loudspeaker")
 		os.Exit(1)
 	}
-	if err = (&loudspeakerv1.Loudspeaker{}).SetupWebhookWithManager(mgr); err != nil {
+	if err = (&loudspeakerv1alpha1.Loudspeaker{}).SetupWebhookWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create webhook", "webhook", "Loudspeaker")
 		os.Exit(1)
 	}

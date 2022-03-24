@@ -22,7 +22,7 @@ spec:
     - jsonPath: .spec.image
       name: IMAGE
       type: string
-    name: v1
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: Loudspeaker is the Schema for the loudspeakers API

@@ -14,7 +14,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	loudspeakerv1 "github.com/masanetes/loudspeaker/api/v1"
+	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
 )
 
 var _ = Describe("Loudspeaker controller", func() {
@@ -22,7 +22,7 @@ var _ = Describe("Loudspeaker controller", func() {
 	var stopFunc func()
 
 	BeforeEach(func() {
-		err := k8sClient.DeleteAllOf(ctx, &loudspeakerv1.Loudspeaker{}, client.InNamespace("test"))
+		err := k8sClient.DeleteAllOf(ctx, &loudspeakerv1alpha1.Loudspeaker{}, client.InNamespace("test"))
 		Expect(err).NotTo(HaveOccurred())
 		err = k8sClient.DeleteAllOf(ctx, &corev1.ConfigMap{}, client.InNamespace("test"))
 		Expect(err).NotTo(HaveOccurred())
@@ -99,7 +99,7 @@ var _ = Describe("Loudspeaker controller", func() {
 		err := k8sClient.Create(ctx, loudspeaker)
 		Expect(err).NotTo(HaveOccurred())
 
-		updated := loudspeakerv1.Loudspeaker{}
+		updated := loudspeakerv1alpha1.Loudspeaker{}
 		Eventually(func() error {
 			err := k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample"}, &updated)
 			if err != nil {
@@ -113,18 +113,18 @@ var _ = Describe("Loudspeaker controller", func() {
 	})
 })
 
-func newLoudSpeaker() *loudspeakerv1.Loudspeaker {
-	return &loudspeakerv1.Loudspeaker{
+func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
+	return &loudspeakerv1alpha1.Loudspeaker{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "sample",
 			Namespace: "test",
 		},
-		Spec: loudspeakerv1.LoudspeakerSpec{
-			Listeners: []loudspeakerv1.Listener{
+		Spec: loudspeakerv1alpha1.LoudspeakerSpec{
+			Listeners: []loudspeakerv1alpha1.Listener{
 				{
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []loudspeakerv1.Subscribe{
+					Subscribes: []loudspeakerv1alpha1.Subscribe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},
