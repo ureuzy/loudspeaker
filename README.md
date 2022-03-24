@@ -43,7 +43,7 @@ EOF
 
 ## Sample custom resource
 
-https://github.com/masanetes/loudspeaker/blob/master/config/samples/loudspeaker_v1_loudspeaker.yaml
+https://github.com/masanetes/loudspeaker/blob/master/config/samples/loudspeaker_v1alpha1_loudspeaker.yaml
 
 ```yaml
 apiVersion: loudspeaker.masanetes.github.io/v1alpha1
@@ -56,8 +56,8 @@ spec:
     - type: "sentry"
       credentials: "sentry-secrets"
       subscribes:
-        - namespace: "default"
+        - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]
-        - namespace: "sample"
+        - namespace: "default"
           ignore: ["Unhealthy"]
 ```
