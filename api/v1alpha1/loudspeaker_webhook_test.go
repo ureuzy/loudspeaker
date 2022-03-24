@@ -14,6 +14,11 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
+const (
+	BeValid   = true
+	BeInvalid = false
+)
+
 func mutateTest(before string, after string) {
 	ctx := context.Background()
 
@@ -71,25 +76,28 @@ var _ = Describe("Loudspeaker Admission Webhook", func() {
 	})
 	Context("Validating Webhook", func() {
 		It("valid Loudspeaker", func() {
-			validateTest(filepath.Join("testdata", "validating", "valid.yaml"), true)
+			validateTest(filepath.Join("testdata", "validating", "valid.yaml"), BeValid)
 		})
 		It("invalid Loudspeaker: Unsupported .spec.listeners[*].type", func() {
-			validateTest(filepath.Join("testdata", "validating", "unsupported-listener-type.yaml"), false)
+			validateTest(filepath.Join("testdata", "validating", "unsupported-listener-type.yaml"), BeInvalid)
 		})
 		It("invalid Loudspeaker: Duplicated .spec.listeners[*].credentials", func() {
-			validateTest(filepath.Join("testdata", "validating", "duplicate-credentials.yaml"), false)
+			validateTest(filepath.Join("testdata", "validating", "duplicate-credentials.yaml"), BeInvalid)
 		})
 		It("invalid Loudspeaker: Without .spec.listeners", func() {
-			validateTest(filepath.Join("testdata", "validating", "without-listeners.yaml"), false)
+			validateTest(filepath.Join("testdata", "validating", "without-listeners.yaml"), BeInvalid)
 		})
-		//It("invalid Loudspeaker: Without .spec.listeners[*].credentials", func() {
-		//	validateTest(filepath.Join("testdata", "validating", "without-credentials.yaml"), false)
-		//})
+		It("invalid Loudspeaker: Without .spec.listeners[*].type", func() {
+			validateTest(filepath.Join("testdata", "validating", "without-listener-type.yaml"), BeInvalid)
+		})
+		It("invalid Loudspeaker: Without .spec.listeners[*].credentials", func() {
+			validateTest(filepath.Join("testdata", "validating", "without-credentials.yaml"), BeInvalid)
+		})
 		It("invalid Loudspeaker: Without .spec.listeners[*].subscribes", func() {
-			validateTest(filepath.Join("testdata", "validating", "without-subscribes.yaml"), false)
+			validateTest(filepath.Join("testdata", "validating", "without-subscribes.yaml"), BeInvalid)
 		})
-		//It("invalid Loudspeaker: Without .spec.listeners[*].subscribes[*].namespace", func() {
-		//	validateTest(filepath.Join("testdata", "validating", "without-namespace.yaml"), false)
-		//})
+		It("invalid Loudspeaker: Without .spec.listeners[*].subscribes[*].namespace", func() {
+			validateTest(filepath.Join("testdata", "validating", "without-namespace.yaml"), BeInvalid)
+		})
 	})
 })
