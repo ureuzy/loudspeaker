@@ -46,7 +46,7 @@ EOF
 https://github.com/masanetes/loudspeaker/blob/master/config/samples/loudspeaker_v1_loudspeaker.yaml
 
 ```yaml
-apiVersion: loudspeaker.masanetes.github.io/v1
+apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
