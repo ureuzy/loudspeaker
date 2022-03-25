@@ -1,0 +1,488 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: loudspeaker-system
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: loudspeakers.loudspeaker.masanetes.github.io
+spec:
+  group: loudspeaker.masanetes.github.io
+  names:
+    kind: Loudspeaker
+    listKind: LoudspeakerList
+    plural: loudspeakers
+    shortNames:
+    - lo
+    singular: loudspeaker
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.image
+      name: IMAGE
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Loudspeaker is the Schema for the loudspeakers API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: LoudspeakerSpec defines the desired state of Loudspeaker
+            properties:
+              image:
+                type: string
+              listeners:
+                items:
+                  description: Listener defines configuration the Listener to which events are sent
+                  properties:
+                    credentials:
+                      minLength: 1
+                      type: string
+                    subscribes:
+                      items:
+                        description: Subscribe defines configuration of subscribing to events
+                        properties:
+                          ignore:
+                            items:
+                              type: string
+                            type: array
+                          namespace:
+                            default: ""
+                            type: string
+                        required:
+                        - namespace
+                        type: object
+                      type: array
+                    type:
+                      description: ListenerType defines the types of Listener that can be specified
+                      enum:
+                      - sentry
+                      type: string
+                  required:
+                  - credentials
+                  - subscribes
+                  - type
+                  type: object
+                type: array
+            required:
+            - listeners
+            type: object
+          status:
+            description: LoudspeakerStatus defines the types of LoudspeakerStatus that can be specified
+            enum:
+            - NotReady
+            - Available
+            - Healthy
+            type: string
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: loudspeaker-controller-manager
+  namespace: loudspeaker-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: loudspeaker-leader-election-role
+  namespace: loudspeaker-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: loudspeaker-manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - loudspeaker.masanetes.github.io
+  resources:
+  - loudspeakers/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: loudspeaker-metrics-reader
+rules:
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: loudspeaker-proxy-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: loudspeaker-leader-election-rolebinding
+  namespace: loudspeaker-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: loudspeaker-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: loudspeaker-controller-manager
+  namespace: loudspeaker-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: loudspeaker-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: loudspeaker-manager-role
+subjects:
+- kind: ServiceAccount
+  name: loudspeaker-controller-manager
+  namespace: loudspeaker-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: loudspeaker-proxy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: loudspeaker-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: loudspeaker-controller-manager
+  namespace: loudspeaker-system
+---
+apiVersion: v1
+data:
+  controller_manager_config.yaml: |
+    apiVersion: controller-runtime.sigs.k8s.io/v1alpha1
+    kind: ControllerManagerConfig
+    health:
+      healthProbeBindAddress: :8081
+    metrics:
+      bindAddress: 127.0.0.1:8080
+    webhook:
+      port: 9443
+    leaderElection:
+      leaderElect: true
+      resourceName: fc3f4f11.masanetes.github.io
+kind: ConfigMap
+metadata:
+  name: loudspeaker-manager-config
+  namespace: loudspeaker-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: loudspeaker-controller-manager-metrics-service
+  namespace: loudspeaker-system
+spec:
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loudspeaker-webhook-service
+  namespace: loudspeaker-system
+spec:
+  ports:
+  - port: 443
+    targetPort: 9443
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: loudspeaker-controller-manager
+  namespace: loudspeaker-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.8.0
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+      - args:
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address=127.0.0.1:8080
+        - --leader-elect
+        command:
+        - /manager
+        image: controller:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: loudspeaker-controller-manager
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loudspeaker-serving-cert
+  namespace: loudspeaker-system
+spec:
+  dnsNames:
+  - loudspeaker-webhook-service.loudspeaker-system.svc
+  - loudspeaker-webhook-service.loudspeaker-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: loudspeaker-selfsigned-issuer
+  secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: loudspeaker-selfsigned-issuer
+  namespace: loudspeaker-system
+spec:
+  selfSigned: {}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: loudspeaker-system/loudspeaker-serving-cert
+  name: loudspeaker-mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: loudspeaker-webhook-service
+      namespace: loudspeaker-system
+      path: /mutate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker
+  failurePolicy: Fail
+  name: mloudspeaker.kb.io
+  rules:
+  - apiGroups:
+    - loudspeaker.masanetes.github.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - loudspeakers
+  sideEffects: None
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: loudspeaker-system/loudspeaker-serving-cert
+  name: loudspeaker-validating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: loudspeaker-webhook-service
+      namespace: loudspeaker-system
+      path: /validate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker
+  failurePolicy: Fail
+  name: vloudspeaker.kb.io
+  rules:
+  - apiGroups:
+    - loudspeaker.masanetes.github.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - loudspeakers
+  sideEffects: None
