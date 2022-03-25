@@ -33,7 +33,7 @@ const (
 
 // Subscribe defines configuration of subscribing to events
 type Subscribe struct {
-	//+kubebuilder:validation:Required
+	//+kubebuilder:default:=""
 	Namespace string `json:"namespace"`
 
 	Ignore []string `json:"ignore,omitempty"`
@@ -45,6 +45,7 @@ type Listener struct {
 	//+kubebuilder:validation:Required
 	Type ListenerType `json:"type"`
 	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:MinLength:=1
 	Credentials string `json:"credentials"`
 	//+kubebuilder:validation:Required
 	Subscribes []Subscribe `json:"subscribes"`

@@ -24,6 +24,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	"github.com/masanetes/loudspeaker/pkg/constants"
 )
 
 // log is for logging in this package.
@@ -46,7 +48,7 @@ func (r *Loudspeaker) Default() {
 	loudspeakerlog.Info("default", "name", r.Name)
 
 	if len(r.Spec.Image) == 0 {
-		r.Spec.Image = "loudspeaker-runtime:latest"
+		r.Spec.Image = constants.DefaultImage
 	}
 }
 
