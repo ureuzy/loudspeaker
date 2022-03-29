@@ -1,3 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sentry-secrets
+data:
+  dsn: c2FtcGxlCg==
+---
 apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:

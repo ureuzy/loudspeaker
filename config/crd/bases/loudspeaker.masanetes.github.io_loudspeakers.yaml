@@ -22,6 +22,9 @@ spec:
     - jsonPath: .spec.image
       name: IMAGE
       type: string
+    - jsonPath: .status
+      name: STATUS
+      type: string
     name: v1alpha1
     schema:
       openAPIV3Schema:
