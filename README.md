@@ -18,19 +18,17 @@ B -->|Events| D[Listener2]
 B -->|Events| E[Listener3]
 ```
 
-## Supported providers
+## Install
+
+```
+kubectl apply -f https://raw.githubusercontent.com/masanetes/loudspeaker/master/install/install.yaml
+```
+
+## Supported listeners
 
 - Sentry
 
-## Apply Credentials
-
-```bash
-$ echo -n 'https://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@xxx.xxx.xxx.xxx' > ./dsn.txt
-$ kubectl create secret generic sentry-secrets --from-file=dsn=./dsn.txt
-```
-
-or
-
+## Prepare Secrets
 ```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
