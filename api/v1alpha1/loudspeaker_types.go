@@ -80,20 +80,29 @@ type LoudspeakerSpec struct {
 	Image string `json:"image,omitempty"`
 }
 
-// LoudspeakerStatus defines the types of LoudspeakerStatus that can be specified
-type LoudspeakerStatus string
+// Status defines the types of Status that can be specified
+type Status string
 
 const (
-	LoudspeakerNotReady  = LoudspeakerStatus("NotReady")
-	LoudspeakerAvailable = LoudspeakerStatus("Available")
-	LoudspeakerHealthy   = LoudspeakerStatus("Healthy")
+	LoudspeakerNotReady  = Status("NotReady")
+	LoudspeakerAvailable = Status("Available")
+	LoudspeakerHealthy   = Status("Healthy")
 )
+
+type LoudspeakerStatus struct {
+	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:Enum=NotReady;Available;Healthy
+	Status Status `json:"status,omitempty"`
+	//+kubebuilder:validation:Required
+	AvailableListener string `json:"available_listener,omitempty"`
+}
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:shortName=lo
 //+kubebuilder:printcolumn:name="IMAGE",type="string",JSONPath=".spec.image"
-//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status"
+//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status"
+//+kubebuilder:printcolumn:name="AVAILABLE-LISTENER",type="string",JSONPath=".status.available_listener"
 
 // Loudspeaker is the Schema for the loudspeakers API
 type Loudspeaker struct {
@@ -102,7 +111,6 @@ type Loudspeaker struct {
 
 	Spec LoudspeakerSpec `json:"spec,omitempty"`
 	//+kubebuilder:validation:Required
-	//+kubebuilder:validation:Enum=NotReady;Available;Healthy
 	Status LoudspeakerStatus `json:"status,omitempty"`
 }
 

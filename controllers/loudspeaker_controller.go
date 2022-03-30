@@ -78,7 +78,7 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, nil
 	}
 	if err != nil {
-		logger.Error(err, "unable to get Loudspeaker", "name", req.NamespacedName)
+		logger.Error(err, "unable to get Loudspeaker")
 		return ctrl.Result{}, err
 	}
 
@@ -191,7 +191,7 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 
 	obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(dep)
 	if err != nil {
-		logger.Error(err, "unstructured", listener.Name)
+		logger.Error(err, "unstructured")
 		return err
 	}
 	patch := &unstructured.Unstructured{
@@ -201,13 +201,13 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 	var current appsv1.Deployment
 	err = r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: name}, &current)
 	if err != nil && !errors.IsNotFound(err) {
-		logger.Error(err, "unstructured", listener.Name)
+		logger.Error(err, "get deployment")
 		return err
 	}
 
 	currApplyConfig, err := appsv1apply.ExtractDeployment(&current, "loudspeaker-controller")
 	if err != nil {
-		logger.Error(err, "unstructured", listener.Name)
+		logger.Error(err, "extractDeployment")
 		return err
 	}
 
@@ -297,18 +297,19 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 
 	var status loudspeakerv1alpha1.LoudspeakerStatus
 	if availableDeployments == 0 {
-		status = loudspeakerv1alpha1.LoudspeakerNotReady
+		status.Status = loudspeakerv1alpha1.LoudspeakerNotReady
 	} else if availableDeployments == len(loudspeaker.Spec.Listeners) {
-		status = loudspeakerv1alpha1.LoudspeakerHealthy
+		status.Status = loudspeakerv1alpha1.LoudspeakerHealthy
 	} else {
-		status = loudspeakerv1alpha1.LoudspeakerAvailable
+		status.Status = loudspeakerv1alpha1.LoudspeakerAvailable
 	}
+	status.AvailableListener = fmt.Sprintf("%d/%d", availableDeployments, len(depList.Items))
 
-	if loudspeaker.Status != status {
+	if loudspeaker.Status.Status != status.Status || loudspeaker.Status.AvailableListener != status.AvailableListener {
 		loudspeaker.Status = status
 		r.setMetrics(loudspeaker)
 
-		r.Recorder.Event(&loudspeaker, corev1.EventTypeNormal, "Updated", fmt.Sprintf("Loudspeaker(%s:%s) updated: %s", loudspeaker.Namespace, loudspeaker.Name, loudspeaker.Status))
+		r.Recorder.Event(&loudspeaker, corev1.EventTypeNormal, "Updated", fmt.Sprintf("Loudspeaker(%s:%s) updated: %s", loudspeaker.Namespace, loudspeaker.Name, loudspeaker.Status.Status))
 
 		err = r.Status().Update(ctx, &loudspeaker)
 		if err != nil {
@@ -316,7 +317,7 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 		}
 	}
 
-	if loudspeaker.Status != loudspeakerv1alpha1.LoudspeakerHealthy {
+	if loudspeaker.Status.Status != loudspeakerv1alpha1.LoudspeakerHealthy {
 		return ctrl.Result{Requeue: true}, nil
 	}
 	return ctrl.Result{}, nil
@@ -331,7 +332,7 @@ func generateName(loudspeaker loudspeakerv1alpha1.Loudspeaker, listener loudspea
 }
 
 func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1alpha1.Loudspeaker) {
-	switch loudspeaker.Status {
+	switch loudspeaker.Status.Status {
 	case loudspeakerv1alpha1.LoudspeakerNotReady:
 		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
 		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)

@@ -153,7 +153,7 @@ var _ = Describe("Loudspeaker controller", func() {
 			if err != nil {
 				return err
 			}
-			if updated.Status == "" {
+			if updated.Status.Status == "" {
 				return errors.New("status should be updated")
 			}
 			return nil

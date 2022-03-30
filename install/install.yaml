@@ -27,6 +27,12 @@ spec:
     - jsonPath: .spec.image
       name: IMAGE
       type: string
+    - jsonPath: .status.status
+      name: STATUS
+      type: string
+    - jsonPath: .status.available_listener
+      name: AVAILABLE-LISTENER
+      type: string
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -52,6 +58,9 @@ spec:
                     credentials:
                       minLength: 1
                       type: string
+                    name:
+                      minLength: 1
+                      type: string
                     subscribes:
                       items:
                         description: Subscribe defines configuration of subscribing to events
@@ -74,6 +83,7 @@ spec:
                       type: string
                   required:
                   - credentials
+                  - name
                   - subscribes
                   - type
                   type: object
@@ -82,12 +92,17 @@ spec:
             - listeners
             type: object
           status:
-            description: LoudspeakerStatus defines the types of LoudspeakerStatus that can be specified
-            enum:
-            - NotReady
-            - Available
-            - Healthy
-            type: string
+            properties:
+              available_listener:
+                type: string
+              status:
+                description: Status defines the types of Status that can be specified
+                enum:
+                - NotReady
+                - Available
+                - Healthy
+                type: string
+            type: object
         type: object
     served: true
     storage: true
@@ -365,7 +380,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: masanetes/loudspeaker:v0.0.1
+        image: masanetes/loudspeaker:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:

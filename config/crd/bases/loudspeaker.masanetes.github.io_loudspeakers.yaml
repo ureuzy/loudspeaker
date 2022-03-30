@@ -22,8 +22,11 @@ spec:
     - jsonPath: .spec.image
       name: IMAGE
       type: string
-    - jsonPath: .status
+    - jsonPath: .status.status
       name: STATUS
+      type: string
+    - jsonPath: .status.available_listener
+      name: AVAILABLE-LISTENER
       type: string
     name: v1alpha1
     schema:
@@ -91,13 +94,17 @@ spec:
             - listeners
             type: object
           status:
-            description: LoudspeakerStatus defines the types of LoudspeakerStatus
-              that can be specified
-            enum:
-            - NotReady
-            - Available
-            - Healthy
-            type: string
+            properties:
+              available_listener:
+                type: string
+              status:
+                description: Status defines the types of Status that can be specified
+                enum:
+                - NotReady
+                - Available
+                - Healthy
+                type: string
+            type: object
         type: object
     served: true
     storage: true
