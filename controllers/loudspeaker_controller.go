@@ -255,7 +255,7 @@ func (r *LoudspeakerReconciler) reconcileGarbageCollection(ctx context.Context, 
 
 	for _, dep := range depList.Items {
 		arr := strings.Split(dep.Name, "-")
-		if loudspeaker.IncludedListener(arr[len(arr)-1]) {
+		if loudspeaker.IncludeListener(arr[len(arr)-1]) {
 			continue
 		}
 		err = r.Delete(ctx, &dep)
@@ -266,7 +266,7 @@ func (r *LoudspeakerReconciler) reconcileGarbageCollection(ctx context.Context, 
 
 	for _, cm := range cmList.Items {
 		arr := strings.Split(cm.Name, "-")
-		if loudspeaker.IncludedListener(arr[len(arr)-1]) {
+		if loudspeaker.IncludeListener(arr[len(arr)-1]) {
 			continue
 		}
 		err = r.Delete(ctx, &cm)

@@ -42,6 +42,7 @@ type Subscribe struct {
 // Listener defines configuration the Listener to which events are sent
 type Listener struct {
 	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:MinLength:=1
 	Name string `json:"name"`
 	//+kubebuilder:validation:Enum:=sentry
 	//+kubebuilder:validation:Required
@@ -55,8 +56,8 @@ type Listener struct {
 
 type Listeners []Listener
 
-// IsDuplicateListenerName is checks whether the same thing is set in each listener's name
-func (l *Listeners) IsDuplicateListenerName() bool {
+// DuplicateListenerName is checks whether the same thing is set in each listener's name
+func (l *Listeners) DuplicateListenerName() bool {
 	m := map[string]bool{}
 	for _, v := range *l {
 		if !m[v.Name] {
@@ -105,8 +106,8 @@ type Loudspeaker struct {
 	Status LoudspeakerStatus `json:"status,omitempty"`
 }
 
-// IncludedListener is checks whether the same thing is included in each listener's name
-func (l *Loudspeaker) IncludedListener(listenerName string) bool {
+// IncludeListener is checks whether the same thing is included in each listener's name
+func (l *Loudspeaker) IncludeListener(listenerName string) bool {
 	for _, listener := range l.Spec.Listeners {
 		if listener.Name == listenerName {
 			return true

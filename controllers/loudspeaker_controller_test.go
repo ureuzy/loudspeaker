@@ -120,6 +120,7 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 		Spec: loudspeakerv1alpha1.LoudspeakerSpec{
 			Listeners: []loudspeakerv1alpha1.Listener{
 				{
+					Name:        "foo",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
 					Subscribes: []loudspeakerv1alpha1.Subscribe{
