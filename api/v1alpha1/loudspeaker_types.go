@@ -17,7 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/json"
 )
@@ -56,6 +55,19 @@ type Listener struct {
 
 type Listeners []Listener
 
+// IsDuplicateListenerName is checks whether the same thing is set in each listener's name
+func (l *Listeners) IsDuplicateListenerName() bool {
+	m := map[string]bool{}
+	for _, v := range *l {
+		if !m[v.Name] {
+			m[v.Name] = true
+		} else {
+			return true
+		}
+	}
+	return false
+}
+
 // LoudspeakerSpec defines the desired state of Loudspeaker
 type LoudspeakerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
@@ -93,9 +105,10 @@ type Loudspeaker struct {
 	Status LoudspeakerStatus `json:"status,omitempty"`
 }
 
-func (l *Loudspeaker) IsIncluded(name string) bool {
+// IncludedListener is checks whether the same thing is included in each listener's name
+func (l *Loudspeaker) IncludedListener(listenerName string) bool {
 	for _, listener := range l.Spec.Listeners {
-		if fmt.Sprintf("%s-%s", l.Name, listener.Name) == name {
+		if listener.Name == listenerName {
 			return true
 		}
 	}

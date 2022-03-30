@@ -82,6 +82,10 @@ func (r *Loudspeaker) ValidateDelete() error {
 func (r *Loudspeaker) validateLoudspeaker() error {
 	var errs field.ErrorList
 
+	if r.Spec.Listeners.IsDuplicateListenerName() {
+		errs = append(errs, field.Duplicate(field.NewPath("spec", "listeners", "name"), "same name must not be specified."))
+	}
+
 	if len(errs) > 0 {
 		err := apierrors.NewInvalid(schema.GroupKind{Group: GroupVersion.Group, Kind: "Loudspeaker"}, r.Name, errs)
 		loudspeakerlog.Error(err, "validation error", "name", r.Name)

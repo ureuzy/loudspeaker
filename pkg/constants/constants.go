@@ -1,5 +1,8 @@
 package constants
 
 const (
-	DefaultImage = "loudspeaker-runtime:latest"
+	DefaultImage     = "loudspeaker-runtime:latest"
+	RuntimeLabelsKey = "app"
+	ContainerName    = "loudspeaker-runtime"
+	DefaultReplicas  = 1
 )
