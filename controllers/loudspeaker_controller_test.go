@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"context"
+	"errors"
+	"k8s.io/utils/pointer"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -64,51 +66,99 @@ var _ = Describe("Loudspeaker controller", func() {
 		time.Sleep(100 * time.Millisecond)
 	})
 
-	//It("should create ConfigMap", func() {
-	//	loudspeaker := newLoudSpeaker()
-	//	err := k8sClient.Create(ctx, loudspeaker)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	cm := corev1.ConfigMap{}
-	//	Eventually(func() error {
-	//		return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-config"}, &cm)
-	//	}).Should(Succeed())
-	//
-	//	Expect(cm.Data).Should(HaveKey("listeners"))
-	//})
+	Context("Create Configmap", func() {
+		// TODO
+		//It("should number of configmaps the same number of listeners", func() {
+		//	loudspeaker := newLoudSpeaker()
+		//	err := k8sClient.Create(ctx, loudspeaker)
+		//	Expect(err).NotTo(HaveOccurred())
+		//
+		//	cmList := corev1.ConfigMapList{}
+		//	opt := &client.ListOptions{
+		//		LabelSelector: labels.SelectorFromSet(labelSet(*loudspeaker)),
+		//		Namespace:     loudspeaker.Namespace,
+		//	}
+		//	err = k8sClient.List(ctx, &cmList, opt)
+		//	Expect(err).NotTo(HaveOccurred())
+		//	Expect(len(cmList.Items)).Should(Equal(len(loudspeaker.Spec.Listeners)))
+		//})
 
-	//It("should create Deployment", func() {
-	//	loudspeaker := newLoudSpeaker()
-	//	err := k8sClient.Create(ctx, loudspeaker)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	dep := appsv1.Deployment{}
-	//	Eventually(func() error {
-	//		return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-forwarder"}, &dep)
-	//	}).Should(Succeed())
-	//	Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Name).Should(Equal("CONFIGMAP"))
-	//	Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Value).Should(Equal("sample-config"))
-	//	Expect(dep.Spec.Replicas).Should(Equal(pointer.Int32Ptr(1)))
-	//	Expect(dep.Spec.Template.Spec.Containers[0].Image).Should(Equal("nginx:latest"))
-	//})
-	//
-	//It("should update status", func() {
-	//	loudspeaker := newLoudSpeaker()
-	//	err := k8sClient.Create(ctx, loudspeaker)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	updated := loudspeakerv1alpha1.Loudspeaker{}
-	//	Eventually(func() error {
-	//		err := k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample"}, &updated)
-	//		if err != nil {
-	//			return err
-	//		}
-	//		if updated.Status == "" {
-	//			return errors.New("status should be updated")
-	//		}
-	//		return nil
-	//	}).Should(Succeed())
-	//})
+		It("should create ConfigMap", func() {
+			loudspeaker := newLoudSpeaker()
+			err := k8sClient.Create(ctx, loudspeaker)
+			Expect(err).NotTo(HaveOccurred())
+
+			cm := corev1.ConfigMap{}
+			Eventually(func() error {
+				return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-foo"}, &cm)
+			}).Should(Succeed())
+			Expect(cm.Data).Should(HaveKey("subscribes"))
+
+			Eventually(func() error {
+				return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-bar"}, &cm)
+			}).Should(Succeed())
+			Expect(cm.Data).Should(HaveKey("subscribes"))
+		})
+	})
+
+	Context("Create Deployment", func() {
+		// TODO
+		//It("should number of deployments the same number of listeners", func() {
+		//	loudspeaker := newLoudSpeaker()
+		//	err := k8sClient.Create(ctx, loudspeaker)
+		//	Expect(err).NotTo(HaveOccurred())
+		//
+		//	depList := appsv1.DeploymentList{}
+		//	opt := &client.ListOptions{
+		//		LabelSelector: labels.SelectorFromSet(labelSet(*loudspeaker)),
+		//		Namespace:     loudspeaker.Namespace,
+		//	}
+		//	err = k8sClient.List(ctx, &depList, opt)
+		//	Expect(err).NotTo(HaveOccurred())
+		//	Expect(len(depList.Items)).Should(Equal(len(loudspeaker.Spec.Listeners)))
+		//})
+
+		It("should create Deployment", func() {
+			loudspeaker := newLoudSpeaker()
+			err := k8sClient.Create(ctx, loudspeaker)
+			Expect(err).NotTo(HaveOccurred())
+
+			dep := appsv1.Deployment{}
+			Eventually(func() error {
+				return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-foo"}, &dep)
+			}).Should(Succeed())
+			Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Name).Should(Equal("CONFIGMAP"))
+			Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Value).Should(Equal("sample-foo"))
+			Expect(dep.Spec.Replicas).Should(Equal(pointer.Int32Ptr(1)))
+			Expect(dep.Spec.Template.Spec.Containers[0].Image).Should(Equal("nginx:latest"))
+
+			Eventually(func() error {
+				return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-bar"}, &dep)
+			}).Should(Succeed())
+			Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Name).Should(Equal("CONFIGMAP"))
+			Expect(dep.Spec.Template.Spec.Containers[0].Env[0].Value).Should(Equal("sample-bar"))
+			Expect(dep.Spec.Replicas).Should(Equal(pointer.Int32Ptr(1)))
+			Expect(dep.Spec.Template.Spec.Containers[0].Image).Should(Equal("nginx:latest"))
+		})
+	})
+
+	It("should update status", func() {
+		loudspeaker := newLoudSpeaker()
+		err := k8sClient.Create(ctx, loudspeaker)
+		Expect(err).NotTo(HaveOccurred())
+
+		updated := loudspeakerv1alpha1.Loudspeaker{}
+		Eventually(func() error {
+			err := k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample"}, &updated)
+			if err != nil {
+				return err
+			}
+			if updated.Status == "" {
+				return errors.New("status should be updated")
+			}
+			return nil
+		}).Should(Succeed())
+	})
 })
 
 func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
@@ -118,6 +168,7 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 			Namespace: "test",
 		},
 		Spec: loudspeakerv1alpha1.LoudspeakerSpec{
+			Image: "nginx:latest",
 			Listeners: []loudspeakerv1alpha1.Listener{
 				{
 					Name:        "foo",
@@ -130,8 +181,18 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 						},
 					},
 				},
+				{
+					Name:        "bar",
+					Type:        "sentry",
+					Credentials: "sample-secrets",
+					Subscribes: []loudspeakerv1alpha1.Subscribe{
+						{
+							Namespace: "default",
+							Ignore:    []string{"BackoffLimitExceeded"},
+						},
+					},
+				},
 			},
-			Image: "nginx:latest",
 		},
 	}
 }

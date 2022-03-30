@@ -32,4 +32,13 @@ spec:
         - namespace: "default"
           ignore: ["Unhealthy"]
           
+    - name: baz
+      type: sentry
+      credentials: sentry-secrets
+      subscribes:
+        - namespace: "" # all namespaces
+          ignore: ["BackoffLimitExceeded"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]
+          
 

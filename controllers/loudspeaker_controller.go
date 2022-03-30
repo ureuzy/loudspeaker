@@ -103,9 +103,7 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	//return r.updateStatus(ctx, loudspeaker)
-
-	return ctrl.Result{}, err
+	return r.updateStatus(ctx, loudspeaker)
 }
 
 func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker, listener loudspeakerv1alpha1.Listener) error {
@@ -162,7 +160,7 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 	volumeMount := corev1apply.VolumeMountApplyConfiguration{
 		Name:      &listener.Credentials,
 		ReadOnly:  pointer.Bool(true),
-		MountPath: pointer.String(fmt.Sprintf("/loudspeaker/creds")),
+		MountPath: pointer.String(fmt.Sprintf(constants.CredentialsMountPath)),
 	}
 	volumes := []*corev1apply.VolumeApplyConfiguration{&volume}
 	volumeMounts := []*corev1apply.VolumeMountApplyConfiguration{&volumeMount}
@@ -280,16 +278,27 @@ func (r *LoudspeakerReconciler) reconcileGarbageCollection(ctx context.Context, 
 
 func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) (ctrl.Result, error) {
 
-	var dep appsv1.Deployment
-	err := r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: fmt.Sprintf("%s-%s", loudspeaker.Name, "forwarder")}, &dep)
+	depList := &appsv1.DeploymentList{}
+	opt := &client.ListOptions{
+		LabelSelector: labels.SelectorFromSet(labelSet(loudspeaker)),
+		Namespace:     loudspeaker.Namespace,
+	}
+	err := r.List(ctx, depList, opt)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 
+	availableDeployments := 0
+	for _, dep := range depList.Items {
+		if dep.Status.AvailableReplicas > 0 {
+			availableDeployments += 1
+		}
+	}
+
 	var status loudspeakerv1alpha1.LoudspeakerStatus
-	if dep.Status.AvailableReplicas == 0 {
+	if availableDeployments == 0 {
 		status = loudspeakerv1alpha1.LoudspeakerNotReady
-	} else if dep.Status.AvailableReplicas == 1 {
+	} else if availableDeployments == len(loudspeaker.Spec.Listeners) {
 		status = loudspeakerv1alpha1.LoudspeakerHealthy
 	} else {
 		status = loudspeakerv1alpha1.LoudspeakerAvailable
