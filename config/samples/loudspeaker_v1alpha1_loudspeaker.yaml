@@ -4,7 +4,7 @@ metadata:
   name: sentry-secrets
 type: Opaque
 stringData:
-  config.yaml: |
+  credentilas.yaml: |
     dsn: "sample"
 ---
 apiVersion: loudspeaker.masanetes.github.io/v1alpha1

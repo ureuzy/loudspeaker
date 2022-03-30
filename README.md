@@ -1,6 +1,6 @@
 # 📢 Loudspeaker
 
-[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.0.1?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
+[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.0.2?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
 [![Go Reference](https://pkg.go.dev/badge/github.com/masanetes/loudspeaker.svg)](https://pkg.go.dev/github.com/masanetes/loudspeaker)
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml)
 [![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/report/github.com/masanetes/loudspeaker)
@@ -35,8 +35,10 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: sentry-secrets
-data:
-  dsn: <base64 dsn>
+type: Opaque
+stringData:
+  credentilas.yaml: |
+    dsn: "sample"
 EOF
 ```
 
@@ -50,10 +52,29 @@ kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  image: "loudspeaker-runtime:latest"
+  image: nginx:latest
   listeners:
-    - type: "sentry"
-      credentials: "sentry-secrets"
+    - name: foo
+      type: sentry
+      credentials: sentry-secrets
+      subscribes:
+        - namespace: "" # all namespaces
+          ignore: ["BackoffLimitExceeded"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]
+    
+    - name: bar
+      type: sentry
+      credentials: sentry-secrets
+      subscribes:
+        - namespace: "" # all namespaces
+          ignore: ["BackoffLimitExceeded"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]
+    
+    - name: baz
+      type: sentry
+      credentials: sentry-secrets
       subscribes:
         - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]
