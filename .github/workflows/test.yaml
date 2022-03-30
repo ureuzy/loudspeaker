@@ -55,12 +55,11 @@ jobs:
         
       - name: Manifests commit
         run: |
-          git add install/install.yaml
           if (git diff --shortstat | grep '[0-9]'); then \
             set -x
             git config --global user.name "[bot] Github Actions"
             git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-            git add .
+            git add install/install.yaml
             git commit --author=. -m 'generated manifests'
             git push
           fi

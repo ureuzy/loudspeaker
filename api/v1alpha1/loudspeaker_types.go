@@ -41,6 +41,9 @@ type Subscribe struct {
 
 // Listener defines configuration the Listener to which events are sent
 type Listener struct {
+	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:MinLength:=1
+	Name string `json:"name"`
 	//+kubebuilder:validation:Enum:=sentry
 	//+kubebuilder:validation:Required
 	Type ListenerType `json:"type"`
@@ -53,12 +56,12 @@ type Listener struct {
 
 type Listeners []Listener
 
-// IsDuplicateCredentials is checks whether the same thing is set in each listener's secrets
-func (l *Listeners) IsDuplicateCredentials() bool {
+// DuplicateListenerName is checks whether the same thing is set in each listener's name
+func (l *Listeners) DuplicateListenerName() bool {
 	m := map[string]bool{}
 	for _, v := range *l {
-		if !m[v.Credentials] {
-			m[v.Credentials] = true
+		if !m[v.Name] {
+			m[v.Name] = true
 		} else {
 			return true
 		}
@@ -77,20 +80,29 @@ type LoudspeakerSpec struct {
 	Image string `json:"image,omitempty"`
 }
 
-// LoudspeakerStatus defines the types of LoudspeakerStatus that can be specified
-type LoudspeakerStatus string
+// Status defines the types of Status that can be specified
+type Status string
 
 const (
-	LoudspeakerNotReady  = LoudspeakerStatus("NotReady")
-	LoudspeakerAvailable = LoudspeakerStatus("Available")
-	LoudspeakerHealthy   = LoudspeakerStatus("Healthy")
+	LoudspeakerNotReady  = Status("NotReady")
+	LoudspeakerAvailable = Status("Available")
+	LoudspeakerHealthy   = Status("Healthy")
 )
+
+type LoudspeakerStatus struct {
+	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:Enum=NotReady;Available;Healthy
+	Status Status `json:"status,omitempty"`
+	//+kubebuilder:validation:Required
+	AvailableListener string `json:"available_listener,omitempty"`
+}
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:shortName=lo
 //+kubebuilder:printcolumn:name="IMAGE",type="string",JSONPath=".spec.image"
-//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status"
+//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status"
+//+kubebuilder:printcolumn:name="AVAILABLE-LISTENER",type="string",JSONPath=".status.available_listener"
 
 // Loudspeaker is the Schema for the loudspeakers API
 type Loudspeaker struct {
@@ -99,8 +111,17 @@ type Loudspeaker struct {
 
 	Spec LoudspeakerSpec `json:"spec,omitempty"`
 	//+kubebuilder:validation:Required
-	//+kubebuilder:validation:Enum=NotReady;Available;Healthy
 	Status LoudspeakerStatus `json:"status,omitempty"`
+}
+
+// IncludeListener is checks whether the same thing is included in each listener's name
+func (l *Loudspeaker) IncludeListener(listenerName string) bool {
+	for _, listener := range l.Spec.Listeners {
+		if listener.Name == listenerName {
+			return true
+		}
+	}
+	return false
 }
 
 func (l *Loudspeaker) ToJsonString() (string, error) {

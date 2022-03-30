@@ -5,7 +5,8 @@ metadata:
   namespace: default
 spec:
   listeners:
-    - type: "sentry"
+    - name: "sample"
+      type: "sentry"
       credentials: "sentry-secrets"
       subscribes:
         - ignore: ["BackoffLimitExceeded"]

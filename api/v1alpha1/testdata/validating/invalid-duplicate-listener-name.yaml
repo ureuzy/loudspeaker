@@ -1,14 +1,23 @@
 apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
-  name: empty-credentials
+  name: valid
   namespace: default
 spec:
   image: "loudspeaker-runtime:latest"
   listeners:
-    - name: "sample"
+    - name: "foo"
       type: "sentry"
-      credentials: ""
+      credentials: "sentry-secrets"
+      subscribes:
+        - namespace: ""
+          ignore: ["BackoffLimitExceeded"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]
+
+    - name: "foo"
+      type: "sentry"
+      credentials: "sentry-secrets"
       subscribes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]

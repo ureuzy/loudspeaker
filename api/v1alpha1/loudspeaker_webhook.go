@@ -82,8 +82,8 @@ func (r *Loudspeaker) ValidateDelete() error {
 func (r *Loudspeaker) validateLoudspeaker() error {
 	var errs field.ErrorList
 
-	if r.Spec.Listeners.IsDuplicateCredentials() {
-		errs = append(errs, field.Duplicate(field.NewPath("spec", "listeners", "credentials"), "same secrets must not be specified."))
+	if r.Spec.Listeners.DuplicateListenerName() {
+		errs = append(errs, field.Duplicate(field.NewPath("spec", "listeners", "name"), "same name must not be specified."))
 	}
 
 	if len(errs) > 0 {

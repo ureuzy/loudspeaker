@@ -90,8 +90,11 @@ var _ = Describe("Loudspeaker Admission Webhook", func() {
 		It("invalid Loudspeaker: Without .spec.listeners[*].subscribes", func() {
 			validateTest(filepath.Join("testdata", "validating", "invalid-without-subscribes.yaml"), BeInvalid)
 		})
-		It("invalid Loudspeaker: Duplicated .spec.listeners[*].credentials", func() {
-			validateTest(filepath.Join("testdata", "validating", "invalid-duplicate-credentials.yaml"), BeInvalid)
+		It("invalid Loudspeaker: Duplicated .spec.listeners[*].name", func() {
+			validateTest(filepath.Join("testdata", "validating", "invalid-duplicate-listener-name.yaml"), BeInvalid)
+		})
+		It("invalid Loudspeaker: Without .spec.listeners[*].name", func() {
+			validateTest(filepath.Join("testdata", "validating", "invalid-without-listener-name.yaml"), BeInvalid)
 		})
 		It("invalid Loudspeaker: Without .spec.listeners[*].credentials", func() {
 			validateTest(filepath.Join("testdata", "validating", "invalid-without-credentials.yaml"), BeInvalid)

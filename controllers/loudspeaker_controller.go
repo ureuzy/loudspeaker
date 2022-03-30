@@ -19,13 +19,14 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"strings"
 
-	"github.com/ghodss/yaml"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	appsv1apply "k8s.io/client-go/applyconfigurations/apps/v1"
 	corev1apply "k8s.io/client-go/applyconfigurations/core/v1"
@@ -37,8 +38,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/yaml"
 
 	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
+	"github.com/masanetes/loudspeaker/pkg/constants"
 )
 
 // LoudspeakerReconciler reconciles a Loudspeaker object
@@ -75,7 +78,7 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, nil
 	}
 	if err != nil {
-		logger.Error(err, "unable to get Loudspeaker", "name", req.NamespacedName)
+		logger.Error(err, "unable to get Loudspeaker")
 		return ctrl.Result{}, err
 	}
 
@@ -83,12 +86,19 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, nil
 	}
 
-	err = r.reconcileConfigMap(ctx, loudspeaker)
-	if err != nil {
-		return ctrl.Result{}, err
+	for _, listener := range loudspeaker.Spec.Listeners {
+		err = r.reconcileConfigMap(ctx, loudspeaker, listener)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		err = r.reconcileDeployment(ctx, loudspeaker, listener)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
 	}
 
-	err = r.reconcileDeployment(ctx, loudspeaker)
+	err = r.reconcileGarbageCollection(ctx, loudspeaker)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -96,24 +106,25 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	return r.updateStatus(ctx, loudspeaker)
 }
 
-func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) error {
+func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker, listener loudspeakerv1alpha1.Listener) error {
 	logger := log.FromContext(ctx)
 
 	cm := &corev1.ConfigMap{}
 	cm.SetNamespace(loudspeaker.Namespace)
-	cm.SetName(loudspeaker.Name + "-config")
+	cm.SetName(generateName(loudspeaker, listener))
+	cm.SetLabels(labelSet(loudspeaker))
 
 	op, err := ctrl.CreateOrUpdate(ctx, r.Client, cm, func() error {
 		if cm.Data == nil {
 			cm.Data = make(map[string]string)
 		}
 
-		obj, err := yaml.Marshal(loudspeaker.Spec.Listeners)
+		obj, err := yaml.Marshal(listener.Subscribes)
 		if err != nil {
 			return err
 		}
-		cm.Data["listeners"] = string(obj)
 
+		cm.Data["subscribes"] = string(obj)
 		return ctrl.SetControllerReference(&loudspeaker, cm, r.Scheme)
 	})
 
@@ -121,65 +132,57 @@ func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspea
 		logger.Error(err, "unable to create or update ConfigMap")
 		return err
 	}
+
 	if op != controllerutil.OperationResultNone {
 		logger.Info("reconcile ConfigMap successfully", "op", op)
 	}
 	return nil
 }
 
-func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) error {
+func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker, listener loudspeakerv1alpha1.Listener) error {
 	logger := log.FromContext(ctx)
 
 	owner, err := ownerRef(loudspeaker, r.Scheme)
 	if err != nil {
 		return err
 	}
-	depName := fmt.Sprintf("%s-%s", loudspeaker.Name, "forwarder")
 
-	var volumes []*corev1apply.VolumeApplyConfiguration
-	var volumeMounts []*corev1apply.VolumeMountApplyConfiguration
-	for _, listener := range loudspeaker.Spec.Listeners {
-		name := listener.Credentials
-		volume := corev1apply.VolumeApplyConfiguration{
-			Name: &name,
-			VolumeSourceApplyConfiguration: corev1apply.VolumeSourceApplyConfiguration{
-				Secret: &corev1apply.SecretVolumeSourceApplyConfiguration{
-					SecretName: &name,
-				},
+	name := generateName(loudspeaker, listener)
+
+	volume := corev1apply.VolumeApplyConfiguration{
+		Name: &listener.Credentials,
+		VolumeSourceApplyConfiguration: corev1apply.VolumeSourceApplyConfiguration{
+			Secret: &corev1apply.SecretVolumeSourceApplyConfiguration{
+				SecretName: &listener.Credentials,
 			},
-		}
-		volumeMount := corev1apply.VolumeMountApplyConfiguration{
-			Name:      &name,
-			ReadOnly:  pointer.Bool(true),
-			MountPath: pointer.String(fmt.Sprintf("/loudspeaker/creds/%s/%s", listener.Type, listener.Credentials)),
-		}
-		volumes = append(volumes, &volume)
-		volumeMounts = append(volumeMounts, &volumeMount)
+		},
 	}
-
-	applyConfig, err := loudspeaker.ToJsonString()
-	if err != nil {
-		return err
+	volumeMount := corev1apply.VolumeMountApplyConfiguration{
+		Name:      &listener.Credentials,
+		ReadOnly:  pointer.Bool(true),
+		MountPath: pointer.String(fmt.Sprintf(constants.CredentialsMountPath)),
 	}
+	volumes := []*corev1apply.VolumeApplyConfiguration{&volume}
+	volumeMounts := []*corev1apply.VolumeMountApplyConfiguration{&volumeMount}
 
-	dep := appsv1apply.Deployment(depName, loudspeaker.Namespace).
-		WithAnnotations(map[string]string{"loudspeaker-apply-config": applyConfig}).
+	dep := appsv1apply.Deployment(name, loudspeaker.Namespace).
 		WithLabels(labelSet(loudspeaker)).
 		WithOwnerReferences(owner).
 		WithSpec(appsv1apply.DeploymentSpec().
-			WithReplicas(1).
+			WithReplicas(constants.DefaultReplicas).
 			WithSelector(metav1apply.LabelSelector().WithMatchLabels(labelSet(loudspeaker))).
 			WithTemplate(corev1apply.PodTemplateSpec().
 				WithLabels(labelSet(loudspeaker)).
 				WithSpec(corev1apply.PodSpec().
 					WithContainers(corev1apply.Container().
-						WithName("loudspeaker-runtime").
+						WithName(constants.ContainerName).
 						WithImage(loudspeaker.Spec.Image).
 						WithImagePullPolicy(corev1.PullIfNotPresent).
 						WithVolumeMounts(volumeMounts...).
 						WithEnv(&corev1apply.EnvVarApplyConfiguration{
 							Name:  pointer.String("CONFIGMAP"),
-							Value: pointer.String(loudspeaker.Name + "-config")}),
+							Value: pointer.String(name),
+						}),
 					).
 					WithVolumes(volumes...),
 				),
@@ -188,6 +191,7 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 
 	obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(dep)
 	if err != nil {
+		logger.Error(err, "unstructured")
 		return err
 	}
 	patch := &unstructured.Unstructured{
@@ -195,13 +199,15 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 	}
 
 	var current appsv1.Deployment
-	err = r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: depName}, &current)
+	err = r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: name}, &current)
 	if err != nil && !errors.IsNotFound(err) {
+		logger.Error(err, "get deployment")
 		return err
 	}
 
 	currApplyConfig, err := appsv1apply.ExtractDeployment(&current, "loudspeaker-controller")
 	if err != nil {
+		logger.Error(err, "extractDeployment")
 		return err
 	}
 
@@ -218,33 +224,92 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 		logger.Error(err, "unable to create or update Deployment")
 		return err
 	}
+
 	logger.Info("reconcile Deployment successfully", "name", loudspeaker.Name)
+
+	return nil
+}
+
+func (r *LoudspeakerReconciler) reconcileGarbageCollection(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) error {
+	logger := log.FromContext(ctx)
+
+	depList := &appsv1.DeploymentList{}
+	cmList := &corev1.ConfigMapList{}
+
+	opt := &client.ListOptions{
+		LabelSelector: labels.SelectorFromSet(labelSet(loudspeaker)),
+		Namespace:     loudspeaker.Namespace,
+	}
+
+	err := r.List(ctx, depList, opt)
+	if err != nil {
+		return err
+	}
+
+	err = r.List(ctx, cmList, opt)
+	if err != nil {
+		return err
+	}
+
+	for _, dep := range depList.Items {
+		arr := strings.Split(dep.Name, "-")
+		if loudspeaker.IncludeListener(arr[len(arr)-1]) {
+			continue
+		}
+		err = r.Delete(ctx, &dep)
+		if err != nil {
+			logger.Error(err, fmt.Sprintf("delete deployment: %s", dep.Name))
+		}
+	}
+
+	for _, cm := range cmList.Items {
+		arr := strings.Split(cm.Name, "-")
+		if loudspeaker.IncludeListener(arr[len(arr)-1]) {
+			continue
+		}
+		err = r.Delete(ctx, &cm)
+		if err != nil {
+			logger.Error(err, fmt.Sprintf("delete Configmap: %s", cm.Name))
+		}
+	}
 
 	return nil
 }
 
 func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker loudspeakerv1alpha1.Loudspeaker) (ctrl.Result, error) {
 
-	var dep appsv1.Deployment
-	err := r.Get(ctx, client.ObjectKey{Namespace: loudspeaker.Namespace, Name: fmt.Sprintf("%s-%s", loudspeaker.Name, "forwarder")}, &dep)
+	depList := &appsv1.DeploymentList{}
+	opt := &client.ListOptions{
+		LabelSelector: labels.SelectorFromSet(labelSet(loudspeaker)),
+		Namespace:     loudspeaker.Namespace,
+	}
+	err := r.List(ctx, depList, opt)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 
-	var status loudspeakerv1alpha1.LoudspeakerStatus
-	if dep.Status.AvailableReplicas == 0 {
-		status = loudspeakerv1alpha1.LoudspeakerNotReady
-	} else if dep.Status.AvailableReplicas == 1 {
-		status = loudspeakerv1alpha1.LoudspeakerHealthy
-	} else {
-		status = loudspeakerv1alpha1.LoudspeakerAvailable
+	availableDeployments := 0
+	for _, dep := range depList.Items {
+		if dep.Status.AvailableReplicas > 0 {
+			availableDeployments += 1
+		}
 	}
 
-	if loudspeaker.Status != status {
+	var status loudspeakerv1alpha1.LoudspeakerStatus
+	if availableDeployments == 0 {
+		status.Status = loudspeakerv1alpha1.LoudspeakerNotReady
+	} else if availableDeployments == len(loudspeaker.Spec.Listeners) {
+		status.Status = loudspeakerv1alpha1.LoudspeakerHealthy
+	} else {
+		status.Status = loudspeakerv1alpha1.LoudspeakerAvailable
+	}
+	status.AvailableListener = fmt.Sprintf("%d/%d", availableDeployments, len(depList.Items))
+
+	if loudspeaker.Status.Status != status.Status || loudspeaker.Status.AvailableListener != status.AvailableListener {
 		loudspeaker.Status = status
 		r.setMetrics(loudspeaker)
 
-		r.Recorder.Event(&loudspeaker, corev1.EventTypeNormal, "Updated", fmt.Sprintf("Loudspeaker(%s:%s) updated: %s", loudspeaker.Namespace, loudspeaker.Name, loudspeaker.Status))
+		r.Recorder.Event(&loudspeaker, corev1.EventTypeNormal, "Updated", fmt.Sprintf("Loudspeaker(%s:%s) updated: %s", loudspeaker.Namespace, loudspeaker.Name, loudspeaker.Status.Status))
 
 		err = r.Status().Update(ctx, &loudspeaker)
 		if err != nil {
@@ -252,18 +317,22 @@ func (r *LoudspeakerReconciler) updateStatus(ctx context.Context, loudspeaker lo
 		}
 	}
 
-	if loudspeaker.Status != loudspeakerv1alpha1.LoudspeakerHealthy {
+	if loudspeaker.Status.Status != loudspeakerv1alpha1.LoudspeakerHealthy {
 		return ctrl.Result{Requeue: true}, nil
 	}
 	return ctrl.Result{}, nil
 }
 
-func labelSet(targets loudspeakerv1alpha1.Loudspeaker) map[string]string {
-	return map[string]string{"app": fmt.Sprintf("test%s", targets.Namespace)}
+func labelSet(loudspeaker loudspeakerv1alpha1.Loudspeaker) map[string]string {
+	return map[string]string{constants.RuntimeLabelsKey: loudspeaker.Name}
+}
+
+func generateName(loudspeaker loudspeakerv1alpha1.Loudspeaker, listener loudspeakerv1alpha1.Listener) string {
+	return fmt.Sprintf("%s-%s", loudspeaker.Name, listener.Name)
 }
 
 func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1alpha1.Loudspeaker) {
-	switch loudspeaker.Status {
+	switch loudspeaker.Status.Status {
 	case loudspeakerv1alpha1.LoudspeakerNotReady:
 		//metrics.NotReadyVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(1)
 		//metrics.AvailableVec.WithLabelValues(loudspeaker.Name, loudspeaker.Name).Set(0)
