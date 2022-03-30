@@ -55,6 +55,8 @@ spec:
                     credentials:
                       minLength: 1
                       type: string
+                    name:
+                      type: string
                     subscribes:
                       items:
                         description: Subscribe defines configuration of subscribing
@@ -79,6 +81,7 @@ spec:
                       type: string
                   required:
                   - credentials
+                  - name
                   - subscribes
                   - type
                   type: object

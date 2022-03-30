@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/json"
 )
@@ -41,6 +42,8 @@ type Subscribe struct {
 
 // Listener defines configuration the Listener to which events are sent
 type Listener struct {
+	//+kubebuilder:validation:Required
+	Name string `json:"name"`
 	//+kubebuilder:validation:Enum:=sentry
 	//+kubebuilder:validation:Required
 	Type ListenerType `json:"type"`
@@ -52,19 +55,6 @@ type Listener struct {
 }
 
 type Listeners []Listener
-
-// IsDuplicateCredentials is checks whether the same thing is set in each listener's secrets
-func (l *Listeners) IsDuplicateCredentials() bool {
-	m := map[string]bool{}
-	for _, v := range *l {
-		if !m[v.Credentials] {
-			m[v.Credentials] = true
-		} else {
-			return true
-		}
-	}
-	return false
-}
 
 // LoudspeakerSpec defines the desired state of Loudspeaker
 type LoudspeakerSpec struct {
@@ -101,6 +91,15 @@ type Loudspeaker struct {
 	//+kubebuilder:validation:Required
 	//+kubebuilder:validation:Enum=NotReady;Available;Healthy
 	Status LoudspeakerStatus `json:"status,omitempty"`
+}
+
+func (l *Loudspeaker) IsIncluded(name string) bool {
+	for _, listener := range l.Spec.Listeners {
+		if fmt.Sprintf("%s-%s", l.Name, listener.Name) == name {
+			return true
+		}
+	}
+	return false
 }
 
 func (l *Loudspeaker) ToJsonString() (string, error) {

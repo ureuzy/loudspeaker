@@ -2,18 +2,39 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: sentry-secrets
-data:
-  dsn: c2FtcGxlCg==
+type: Opaque
+stringData:
+  config.yaml: |
+    dsn: "aaaaaaaaaaaaa"
 ---
 apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  image: "loudspeaker-runtime:latest"
+  image: nginx:latest
   listeners:
-    - type: "sentry"
-      credentials: "sentry-secrets"
+    - name: hogehoge
+      type: sentry
+      credentials: sentry-secrets
+      subscribes:
+        - namespace: "" # all namespaces
+          ignore: ["BackoffLimitExceeded"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]
+          
+    - name: fugafuga
+      type: sentry
+      credentials: sentry-secrets
+      subscribes:
+        - namespace: "" # all namespaces
+          ignore: ["BackoffLimitExceeded"]
+        - namespace: "default"
+          ignore: ["Unhealthy"]
+          
+    - name: piyopiyo
+      type: sentry
+      credentials: sentry-secrets
       subscribes:
         - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]

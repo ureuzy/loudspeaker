@@ -6,5 +6,6 @@ metadata:
 spec:
   image: "loudspeaker-runtime:latest"
   listeners:
-    - type: "sentry"
+    - name: "sample"
+      type: "sentry"
       credentials: "sentry-secrets"

@@ -6,7 +6,8 @@ metadata:
 spec:
   image: "loudspeaker-runtime:latest"
   listeners:
-    - credentials: "sentry-secrets"
+    - name: "sample"
+      credentials: "sentry-secrets"
       subscribes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]
