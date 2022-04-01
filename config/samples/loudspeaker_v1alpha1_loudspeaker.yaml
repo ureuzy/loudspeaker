@@ -30,7 +30,7 @@ apiVersion: loudspeaker.masanetes.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
-  nammespace: default
+  namespace: default
 spec:
   image: masanetes/loudspeaker-runtime:latest
   serviceAccountName: loudspeaker-runtime
@@ -44,13 +44,5 @@ spec:
         - namespace: "default"
           ignore: ["Unhealthy"]
           
-    - name: bar
-      type: sentry
-      credentials: sentry-secrets
-      subscribes:
-        - namespace: "" # all namespaces
-          ignore: ["BackoffLimitExceeded"]
-        - namespace: "default"
-          ignore: ["Unhealthy"]
           
 
