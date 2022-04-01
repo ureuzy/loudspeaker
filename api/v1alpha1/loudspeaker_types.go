@@ -74,10 +74,12 @@ type LoudspeakerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	//+kubebuilder:validation:Required
-	Listeners Listeners `json:"listeners"`
 	//+optional
 	Image string `json:"image,omitempty"`
+	//+kubebuilder:validation:Required
+	ServiceAccountName string `json:"serviceAccountName"`
+	//+kubebuilder:validation:Required
+	Listeners Listeners `json:"listeners"`
 }
 
 // Status defines the types of Status that can be specified

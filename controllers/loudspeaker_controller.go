@@ -87,19 +87,16 @@ func (r *LoudspeakerReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	for _, listener := range loudspeaker.Spec.Listeners {
-		err = r.reconcileConfigMap(ctx, loudspeaker, listener)
-		if err != nil {
+		if err = r.reconcileConfigMap(ctx, loudspeaker, listener); err != nil {
 			return ctrl.Result{}, err
 		}
 
-		err = r.reconcileDeployment(ctx, loudspeaker, listener)
-		if err != nil {
+		if err = r.reconcileDeployment(ctx, loudspeaker, listener); err != nil {
 			return ctrl.Result{}, err
 		}
 	}
 
-	err = r.reconcileGarbageCollection(ctx, loudspeaker)
-	if err != nil {
+	if err = r.reconcileGarbageCollection(ctx, loudspeaker); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -174,15 +171,25 @@ func (r *LoudspeakerReconciler) reconcileDeployment(ctx context.Context, loudspe
 			WithTemplate(corev1apply.PodTemplateSpec().
 				WithLabels(labelSet(loudspeaker)).
 				WithSpec(corev1apply.PodSpec().
+					WithServiceAccountName(loudspeaker.Spec.ServiceAccountName).
 					WithContainers(corev1apply.Container().
 						WithName(constants.ContainerName).
 						WithImage(loudspeaker.Spec.Image).
 						WithImagePullPolicy(corev1.PullIfNotPresent).
 						WithVolumeMounts(volumeMounts...).
-						WithEnv(&corev1apply.EnvVarApplyConfiguration{
-							Name:  pointer.String("CONFIGMAP"),
-							Value: pointer.String(name),
-						}),
+						WithEnv(
+							&corev1apply.EnvVarApplyConfiguration{
+								Name:  pointer.String("CONFIGMAP"),
+								Value: pointer.String(name),
+							},
+							&corev1apply.EnvVarApplyConfiguration{
+								Name:  pointer.String("TYPE"),
+								Value: pointer.String(string(listener.Type)),
+							},
+							&corev1apply.EnvVarApplyConfiguration{
+								Name:  pointer.String("NAMESPACE"),
+								Value: pointer.String(loudspeaker.Namespace),
+							}),
 					).
 					WithVolumes(volumes...),
 				),
