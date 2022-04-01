@@ -31,6 +31,7 @@ kubectl apply -f https://raw.githubusercontent.com/masanetes/loudspeaker/master/
 ## Preparation of runtime setting
 
 ```
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -49,6 +50,7 @@ subjects:
   - kind: ServiceAccount
     name: loudspeaker-runtime
     namespace: default
+EOF
 ```
 
 ## Preparation of confidential listener information
@@ -75,7 +77,8 @@ kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
 spec:
-  image: nginx:latest
+  image: masanetes/loudspeaker-runtime:latest
+  serviceAccountName: loudspeaker-runtime  
   listeners:
     - name: foo
       type: sentry
