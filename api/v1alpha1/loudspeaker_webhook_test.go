@@ -78,6 +78,9 @@ var _ = Describe("Loudspeaker Admission Webhook", func() {
 		It("valid Loudspeaker", func() {
 			validateTest(filepath.Join("testdata", "validating", "valid.yaml"), BeValid)
 		})
+		It("invalid Loudspeaker: Without .spec.serviceAccountName", func() {
+			validateTest(filepath.Join("testdata", "validating", "invalid-without-serviceaccountname.yaml"), BeInvalid)
+		})
 		It("invalid Loudspeaker: Without .spec.listeners", func() {
 			validateTest(filepath.Join("testdata", "validating", "invalid-without-listeners.yaml"), BeInvalid)
 		})

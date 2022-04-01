@@ -77,6 +77,7 @@ type LoudspeakerSpec struct {
 	//+optional
 	Image string `json:"image,omitempty"`
 	//+kubebuilder:validation:Required
+	//+kubebuilder:validation:MinLength:=1
 	ServiceAccountName string `json:"serviceAccountName"`
 	//+kubebuilder:validation:Required
 	Listeners Listeners `json:"listeners"`

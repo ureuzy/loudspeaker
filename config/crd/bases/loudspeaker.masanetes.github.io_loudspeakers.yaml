@@ -91,6 +91,7 @@ spec:
                   type: object
                 type: array
               serviceAccountName:
+                minLength: 1
                 type: string
             required:
             - listeners
