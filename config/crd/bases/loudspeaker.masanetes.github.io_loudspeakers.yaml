@@ -90,8 +90,12 @@ spec:
                   - type
                   type: object
                 type: array
+              serviceAccountName:
+                minLength: 1
+                type: string
             required:
             - listeners
+            - serviceAccountName
             type: object
           status:
             properties:

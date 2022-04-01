@@ -168,7 +168,8 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 			Namespace: "test",
 		},
 		Spec: loudspeakerv1alpha1.LoudspeakerSpec{
-			Image: "nginx:latest",
+			Image:              "nginx:latest",
+			ServiceAccountName: "sample-service-account",
 			Listeners: []loudspeakerv1alpha1.Listener{
 				{
 					Name:        "foo",

@@ -4,6 +4,7 @@ metadata:
   name: loudspeaker-sample
   namespace: default
 spec:
+  serviceAccountName: loudspeaker-runtime
   listeners:
     - name: "sample"
       type: "sentry"

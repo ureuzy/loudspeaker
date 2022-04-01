@@ -36,7 +36,8 @@ func loudspeaker1() *Loudspeaker {
 			Namespace: "test",
 		},
 		Spec: LoudspeakerSpec{
-			Image: "nginx:latest",
+			Image:              "nginx:latest",
+			ServiceAccountName: "sample-service-account",
 			Listeners: []Listener{
 				{
 					Name:        "foo",
@@ -72,7 +73,8 @@ func loudspeaker2() *Loudspeaker {
 			Namespace: "test",
 		},
 		Spec: LoudspeakerSpec{
-			Image: "nginx:latest",
+			Image:              "nginx:latest",
+			ServiceAccountName: "sample-service-account",
 			Listeners: []Listener{
 				{
 					Name:        "foo",

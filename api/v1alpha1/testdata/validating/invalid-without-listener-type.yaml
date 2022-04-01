@@ -5,6 +5,7 @@ metadata:
   namespace: default
 spec:
   image: "loudspeaker-runtime:latest"
+  serviceAccountName: loudspeaker-runtime
   listeners:
     - name: "sample"
       credentials: "sentry-secrets"

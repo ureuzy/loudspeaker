@@ -1,6 +1,6 @@
-# 📢 Loudspeaker
+# 📢 Loudspeaker Operator
 
-[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.0.2?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
+[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.0.3?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
 [![Go Reference](https://pkg.go.dev/badge/github.com/masanetes/loudspeaker.svg)](https://pkg.go.dev/github.com/masanetes/loudspeaker)
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml)
 [![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/report/github.com/masanetes/loudspeaker)
@@ -28,7 +28,30 @@ kubectl apply -f https://raw.githubusercontent.com/masanetes/loudspeaker/master/
 
 - Sentry
 
-## Prepare Secrets
+## Preparation of runtime setting
+
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: loudspeaker-runtime
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: loudspeaker-runtime
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+  - kind: ServiceAccount
+    name: loudspeaker-runtime
+    namespace: default
+```
+
+## Preparation of confidential listener information
 ```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
