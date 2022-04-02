@@ -1,7 +1,7 @@
 # Loudspeaker Operator
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.0.3?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
+[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.0.4?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
 [![Go Reference](https://pkg.go.dev/badge/github.com/masanetes/loudspeaker.svg)](https://pkg.go.dev/github.com/masanetes/loudspeaker)
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml)
 [![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/report/github.com/masanetes/loudspeaker)
@@ -96,7 +96,7 @@ spec:
     - name: foo
       type: sentry
       credentials: sentry-secrets
-      subscribes:
+      observes:
         - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]
         - namespace: "default"
@@ -105,7 +105,7 @@ spec:
     - name: bar
       type: sentry
       credentials: sentry-secrets
-      subscribes:
+      observes:
         - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]
         - namespace: "default"
@@ -114,7 +114,7 @@ spec:
     - name: baz
       type: sentry
       credentials: sentry-secrets
-      subscribes:
+      observes:
         - namespace: "" # all namespaces
           ignore: ["BackoffLimitExceeded"]
         - namespace: "default"

@@ -9,7 +9,7 @@ spec:
   listeners:
     - name: "sample"
       credentials: "sentry-secrets"
-      subscribes:
+      observes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]
         - namespace: "default"

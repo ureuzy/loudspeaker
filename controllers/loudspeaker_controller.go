@@ -116,12 +116,12 @@ func (r *LoudspeakerReconciler) reconcileConfigMap(ctx context.Context, loudspea
 			cm.Data = make(map[string]string)
 		}
 
-		obj, err := yaml.Marshal(listener.Subscribes)
+		obj, err := yaml.Marshal(listener.Observes)
 		if err != nil {
 			return err
 		}
 
-		cm.Data["subscribes"] = string(obj)
+		cm.Data["observes"] = string(obj)
 		return ctrl.SetControllerReference(&loudspeaker, cm, r.Scheme)
 	})
 
