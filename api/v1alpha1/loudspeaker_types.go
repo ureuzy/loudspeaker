@@ -28,11 +28,11 @@ import (
 type ListenerType string
 
 const (
-	Sentry = ListenerType("sentry")
+	Sentry ListenerType = "sentry"
 )
 
-// Subscribe defines configuration of subscribing to events
-type Subscribe struct {
+// Observe defines of namespace to observe and events to ignore
+type Observe struct {
 	//+kubebuilder:default:=""
 	Namespace string `json:"namespace"`
 
@@ -51,7 +51,7 @@ type Listener struct {
 	//+kubebuilder:validation:MinLength:=1
 	Credentials string `json:"credentials"`
 	//+kubebuilder:validation:Required
-	Subscribes []Subscribe `json:"subscribes"`
+	Observes []Observe `json:"observes"`
 }
 
 type Listeners []Listener

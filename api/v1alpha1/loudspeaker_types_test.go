@@ -43,7 +43,7 @@ func loudspeaker1() *Loudspeaker {
 					Name:        "foo",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []Subscribe{
+					Observes: []Observe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},
@@ -54,7 +54,7 @@ func loudspeaker1() *Loudspeaker {
 					Name:        "foo",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []Subscribe{
+					Observes: []Observe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},
@@ -80,7 +80,7 @@ func loudspeaker2() *Loudspeaker {
 					Name:        "foo",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []Subscribe{
+					Observes: []Observe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},
@@ -91,7 +91,7 @@ func loudspeaker2() *Loudspeaker {
 					Name:        "bar",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []Subscribe{
+					Observes: []Observe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},

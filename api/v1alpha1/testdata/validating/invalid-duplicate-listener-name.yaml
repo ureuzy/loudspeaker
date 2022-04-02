@@ -10,7 +10,7 @@ spec:
     - name: "foo"
       type: "sentry"
       credentials: "sentry-secrets"
-      subscribes:
+      observes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]
         - namespace: "default"
@@ -19,7 +19,7 @@ spec:
     - name: "foo"
       type: "sentry"
       credentials: "sentry-secrets"
-      subscribes:
+      observes:
         - namespace: ""
           ignore: ["BackoffLimitExceeded"]
         - namespace: "default"

@@ -92,12 +92,12 @@ var _ = Describe("Loudspeaker controller", func() {
 			Eventually(func() error {
 				return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-foo"}, &cm)
 			}).Should(Succeed())
-			Expect(cm.Data).Should(HaveKey("subscribes"))
+			Expect(cm.Data).Should(HaveKey("observes"))
 
 			Eventually(func() error {
 				return k8sClient.Get(ctx, client.ObjectKey{Namespace: "test", Name: "sample-bar"}, &cm)
 			}).Should(Succeed())
-			Expect(cm.Data).Should(HaveKey("subscribes"))
+			Expect(cm.Data).Should(HaveKey("observes"))
 		})
 	})
 
@@ -175,7 +175,7 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 					Name:        "foo",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []loudspeakerv1alpha1.Subscribe{
+					Observes: []loudspeakerv1alpha1.Observe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},
@@ -186,7 +186,7 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 					Name:        "bar",
 					Type:        "sentry",
 					Credentials: "sample-secrets",
-					Subscribes: []loudspeakerv1alpha1.Subscribe{
+					Observes: []loudspeakerv1alpha1.Observe{
 						{
 							Namespace: "default",
 							Ignore:    []string{"BackoffLimitExceeded"},

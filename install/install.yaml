@@ -61,9 +61,9 @@ spec:
                     name:
                       minLength: 1
                       type: string
-                    subscribes:
+                    observes:
                       items:
-                        description: Subscribe defines configuration of subscribing to events
+                        description: Observe defines of namespace to observe and events to ignore
                         properties:
                           ignore:
                             items:
@@ -84,7 +84,7 @@ spec:
                   required:
                   - credentials
                   - name
-                  - subscribes
+                  - observes
                   - type
                   type: object
                 type: array
