@@ -11,6 +11,14 @@ var _ = Describe("Loudspeaker Types", func() {
 	loudspeaker1 := loudspeaker1()
 	loudspeaker2 := loudspeaker2()
 
+	It("Contains ignore reason", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].Ignores.Contains("BackoffLimitExceeded")).Should(Equal(true))
+	})
+
+	It("No contains ignore reason", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].Ignores.Contains("Unhealthy")).Should(Equal(false))
+	})
+
 	It("Duplicate listener name", func() {
 		Expect(loudspeaker1.Spec.Listeners.DuplicateListenerName()).Should(Equal(true))
 	})
@@ -46,7 +54,7 @@ func loudspeaker1() *Loudspeaker {
 					Observes: []Observe{
 						{
 							Namespace: "default",
-							Ignore:    []string{"BackoffLimitExceeded"},
+							Ignores:   []string{"BackoffLimitExceeded"},
 						},
 					},
 				},
@@ -57,7 +65,7 @@ func loudspeaker1() *Loudspeaker {
 					Observes: []Observe{
 						{
 							Namespace: "default",
-							Ignore:    []string{"BackoffLimitExceeded"},
+							Ignores:   []string{"BackoffLimitExceeded"},
 						},
 					},
 				},
@@ -83,7 +91,7 @@ func loudspeaker2() *Loudspeaker {
 					Observes: []Observe{
 						{
 							Namespace: "default",
-							Ignore:    []string{"BackoffLimitExceeded"},
+							Ignores:   []string{"BackoffLimitExceeded"},
 						},
 					},
 				},
@@ -94,7 +102,7 @@ func loudspeaker2() *Loudspeaker {
 					Observes: []Observe{
 						{
 							Namespace: "default",
-							Ignore:    []string{"BackoffLimitExceeded"},
+							Ignores:   []string{"BackoffLimitExceeded"},
 						},
 					},
 				},

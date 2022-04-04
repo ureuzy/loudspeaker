@@ -74,7 +74,7 @@ metadata:
   name: sentry-secrets
 type: Opaque
 stringData:
-  credentilas.yaml: |
+  credentials.yaml: |
     dsn: "sample"
 EOF
 ```
@@ -98,25 +98,25 @@ spec:
       credentials: sentry-secrets
       observes:
         - namespace: "" # all namespaces
-          ignore: ["BackoffLimitExceeded"]
+          ignores: ["BackoffLimitExceeded"]
         - namespace: "default"
-          ignore: ["Unhealthy"]
+          ignores: ["Unhealthy"]
     
     - name: bar
       type: sentry
       credentials: sentry-secrets
       observes:
         - namespace: "" # all namespaces
-          ignore: ["BackoffLimitExceeded"]
+          ignores: ["BackoffLimitExceeded"]
         - namespace: "default"
-          ignore: ["Unhealthy"]
+          ignores: ["Unhealthy"]
     
     - name: baz
       type: sentry
       credentials: sentry-secrets
       observes:
         - namespace: "" # all namespaces
-          ignore: ["BackoffLimitExceeded"]
+          ignores: ["BackoffLimitExceeded"]
         - namespace: "default"
-          ignore: ["Unhealthy"]
+          ignores: ["Unhealthy"]
 ```
