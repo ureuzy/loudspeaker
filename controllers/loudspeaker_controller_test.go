@@ -178,7 +178,7 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 					Observes: []loudspeakerv1alpha1.Observe{
 						{
 							Namespace: "default",
-							Ignore:    []string{"BackoffLimitExceeded"},
+							Ignores:   []string{"BackoffLimitExceeded"},
 						},
 					},
 				},
@@ -189,7 +189,7 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 					Observes: []loudspeakerv1alpha1.Observe{
 						{
 							Namespace: "default",
-							Ignore:    []string{"BackoffLimitExceeded"},
+							Ignores:   []string{"BackoffLimitExceeded"},
 						},
 					},
 				},

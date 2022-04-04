@@ -31,12 +31,25 @@ const (
 	Sentry ListenerType = "sentry"
 )
 
+// Ignores is an array of event Reason to ignore
+type Ignores []string
+
+// Contains is whether the argument "reason" is included or not.
+func (i *Ignores) Contains(reason string) bool {
+	for _, ignore := range *i {
+		if ignore == reason {
+			return true
+		}
+	}
+	return false
+}
+
 // Observe defines of namespace to observe and events to ignore
 type Observe struct {
 	//+kubebuilder:default:=""
 	Namespace string `json:"namespace"`
 
-	Ignore []string `json:"ignore,omitempty"`
+	Ignores Ignores `json:"ignores,omitempty"`
 }
 
 // Listener defines configuration the Listener to which events are sent

@@ -65,7 +65,7 @@ spec:
                       items:
                         description: Observe defines of namespace to observe and events to ignore
                         properties:
-                          ignore:
+                          ignores:
                             items:
                               type: string
                             type: array

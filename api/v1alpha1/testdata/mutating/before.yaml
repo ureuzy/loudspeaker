@@ -10,6 +10,6 @@ spec:
       type: "sentry"
       credentials: "sentry-secrets"
       observes:
-        - ignore: ["BackoffLimitExceeded"]
+        - ignores: ["BackoffLimitExceeded"]
         - namespace: "default"
-          ignore: ["Unhealthy"]
+          ignores: ["Unhealthy"]
