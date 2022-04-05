@@ -31,13 +31,59 @@ const (
 	Sentry ListenerType = "sentry"
 )
 
-// Ignores is an array of event Reason to ignore
-type Ignores []string
+type EventType string
+
+const (
+	Normal  = EventType("Normal")
+	Warning = EventType("Warning")
+)
+
+// IgnoreReasons is an array of event Reason to ignore
+type IgnoreReasons []string
 
 // Contains is whether the argument "reason" is included or not.
-func (i *Ignores) Contains(reason string) bool {
+func (i *IgnoreReasons) Contains(reason string) bool {
 	for _, ignore := range *i {
 		if ignore == reason {
+			return true
+		}
+	}
+	return false
+}
+
+// InvolvedObjectNames is an array of event involved object names to be activated.
+type InvolvedObjectNames []string
+
+// Contains is whether the argument "objectName" is included or not.
+func (i *InvolvedObjectNames) Contains(objectName string) bool {
+	for _, name := range *i {
+		if name == objectName {
+			return true
+		}
+	}
+	return false
+}
+
+// InvolvedObjectKinds is an array of event involved object kinds to be activated.
+type InvolvedObjectKinds []string
+
+// Contains is whether the argument "objectKind" is included or not.
+func (i *InvolvedObjectKinds) Contains(objectKind string) bool {
+	for _, kind := range *i {
+		if kind == objectKind {
+			return true
+		}
+	}
+	return false
+}
+
+// EventTypes is an array of event involved event type to be activated.
+type EventTypes []string
+
+// Contains is whether the argument "eventType" is included or not.
+func (i *EventTypes) Contains(eventType string) bool {
+	for _, event := range *i {
+		if event == eventType {
 			return true
 		}
 	}
@@ -49,7 +95,17 @@ type Observe struct {
 	//+kubebuilder:default:=""
 	Namespace string `json:"namespace"`
 
-	Ignores Ignores `json:"ignores,omitempty"`
+	//+kubebuilder:default:={""}
+	IgnoreReasons IgnoreReasons `json:"ignoresReasons,omitempty"`
+
+	//+kubebuilder:default:={""}
+	InvolvedObjectNames InvolvedObjectNames `json:"involvedObjectNames,omitempty"`
+
+	//+kubebuilder:default:={""}
+	InvolvedObjectKinds InvolvedObjectKinds `json:"involvedObjectKinds,omitempty"`
+
+	//+kubebuilder:default:={""}
+	EventTypes EventTypes `json:"eventTypes,omitempty"`
 }
 
 // Listener defines configuration the Listener to which events are sent

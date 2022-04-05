@@ -12,11 +12,35 @@ var _ = Describe("Loudspeaker Types", func() {
 	loudspeaker2 := loudspeaker2()
 
 	It("Contains ignore reason", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].Ignores.Contains("BackoffLimitExceeded")).Should(Equal(true))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreReasons.Contains("BackoffLimitExceeded")).Should(Equal(true))
 	})
 
 	It("No contains ignore reason", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].Ignores.Contains("Unhealthy")).Should(Equal(false))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreReasons.Contains("Unhealthy")).Should(Equal(false))
+	})
+
+	It("Contains object name", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectNames.Contains("sample-foo")).Should(Equal(true))
+	})
+
+	It("No contains object name", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectNames.Contains("sample-bar")).Should(Equal(false))
+	})
+
+	It("Contains object kind", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectKinds.Contains("Deployment")).Should(Equal(true))
+	})
+
+	It("No contains object kind", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectKinds.Contains("Cronjob")).Should(Equal(false))
+	})
+
+	It("Contains event type", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].EventTypes.Contains("Normal")).Should(Equal(true))
+	})
+
+	It("No contains event type", func() {
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].EventTypes.Contains("Warning")).Should(Equal(false))
 	})
 
 	It("Duplicate listener name", func() {
@@ -53,8 +77,11 @@ func loudspeaker1() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace: "default",
-							Ignores:   []string{"BackoffLimitExceeded"},
+							Namespace:           "default",
+							IgnoreReasons:       []string{"BackoffLimitExceeded"},
+							InvolvedObjectNames: []string{"sample-foo"},
+							InvolvedObjectKinds: []string{"Deployment"},
+							EventTypes:          []string{"Normal"},
 						},
 					},
 				},
@@ -64,8 +91,11 @@ func loudspeaker1() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace: "default",
-							Ignores:   []string{"BackoffLimitExceeded"},
+							Namespace:           "default",
+							IgnoreReasons:       []string{"BackoffLimitExceeded"},
+							InvolvedObjectNames: []string{"sample-foo"},
+							InvolvedObjectKinds: []string{"Deployment"},
+							EventTypes:          []string{"Normal"},
 						},
 					},
 				},
@@ -90,8 +120,11 @@ func loudspeaker2() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace: "default",
-							Ignores:   []string{"BackoffLimitExceeded"},
+							Namespace:           "default",
+							IgnoreReasons:       []string{"BackoffLimitExceeded"},
+							InvolvedObjectNames: []string{"sample-foo"},
+							InvolvedObjectKinds: []string{"Deployment"},
+							EventTypes:          []string{"Normal"},
 						},
 					},
 				},
@@ -101,8 +134,11 @@ func loudspeaker2() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace: "default",
-							Ignores:   []string{"BackoffLimitExceeded"},
+							Namespace:           "default",
+							IgnoreReasons:       []string{"BackoffLimitExceeded"},
+							InvolvedObjectNames: []string{"sample-foo"},
+							InvolvedObjectKinds: []string{"Deployment"},
+							EventTypes:          []string{"Normal"},
 						},
 					},
 				},

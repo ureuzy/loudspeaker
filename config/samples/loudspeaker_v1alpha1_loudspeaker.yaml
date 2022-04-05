@@ -39,10 +39,12 @@ spec:
       type: sentry
       credentials: sentry-secrets
       observes:
-        - namespace: "cert-manager" # all namespaces
-          ignores: ["BackoffLimitExceeded"]
         - namespace: "default"
-          ignores: ["Unhealthy"]
+          ignoresReasons: ["ScalingReplicaSet"]
+          involvedObjectNames: ["sample-nginx"]
+          involvedObjectKinds: ["Deployment"]
+          eventTypes: ["Normal"]
+          
           
           
 
