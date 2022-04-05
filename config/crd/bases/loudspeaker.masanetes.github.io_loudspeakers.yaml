@@ -66,7 +66,35 @@ spec:
                         description: Observe defines of namespace to observe and events
                           to ignore
                         properties:
-                          ignores:
+                          eventTypes:
+                            default:
+                            - ""
+                            description: EventTypes is an array of event involved
+                              event type to be activated.
+                            items:
+                              type: string
+                            type: array
+                          ignoresReasons:
+                            default:
+                            - ""
+                            description: IgnoreReasons is an array of event Reason
+                              to ignore
+                            items:
+                              type: string
+                            type: array
+                          involvedObjectKinds:
+                            default:
+                            - ""
+                            description: InvolvedObjectKinds is an array of event
+                              involved object kinds to be activated.
+                            items:
+                              type: string
+                            type: array
+                          involvedObjectNames:
+                            default:
+                            - ""
+                            description: InvolvedObjectNames is an array of event
+                              involved object names to be activated.
                             items:
                               type: string
                             type: array
