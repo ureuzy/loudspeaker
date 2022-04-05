@@ -10,6 +10,12 @@ spec:
       type: "sentry"
       credentials: "sentry-secrets"
       observes:
-        - ignores: ["BackoffLimitExceeded"]
+        - ignoresReasons: ["ScalingReplicaSet"]
+          involvedObjectNames: ["sample-nginx"]
+          involvedObjectKinds: ["Deployment"]
+          eventTypes: ["Normal"]
         - namespace: "default"
-          ignores: ["Unhealthy"]
+          ignoresReasons: ["ScalingReplicaSet"]
+          involvedObjectNames: ["sample-nginx"]
+          involvedObjectKinds: ["Deployment"]
+          eventTypes: ["Normal"]
