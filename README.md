@@ -16,13 +16,9 @@ These settings are managed by configmap, and the runtime can change its observat
 
 
 ```mermaid
-flowchart LR
-subgraph 4_[Kubernetes Cluster]
-  A[KubeAPI] -->|Events| B(loudspeaker)
-end  
-B -->|Events| C[Listener1]
-B -->|Events| D[Listener2]
-B -->|Events| E[Listener3]
+graph LR
+CM(Controller Manager) --> |Reconcile| Deployments(Deployments/Runtime)
+CM(Controller Manager) --> |Reconcile| Configmaps(Configmaps/Runtime Settings)
 ```
 
 # 🚀 Quick Start
@@ -32,6 +28,9 @@ B -->|Events| E[Listener3]
 ```
 $ kubectl apply -f https://raw.githubusercontent.com/masanetes/loudspeaker/master/install/install.yaml
 ```
+
+> Note: cert-manager is required as a certificate for webhook. If you do not have it, please refer to the link to install it.
+> https://cert-manager.io/
 
 
 ## Preparation of runtime setting
