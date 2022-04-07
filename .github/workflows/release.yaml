@@ -18,11 +18,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       
-      - name: Get tag
+      - name: Extract release tag
         run: |
-          git fetch origin ${{ github.event.pull_request.head.ref }}
-          git checkout ${{ github.event.pull_request.head.ref }}
           echo "TAG=${{ github.event.pull_request.head.ref }} | sed 's/release\///'" >> $GITHUB_ENV
+          echo release tag ${{ env.TAG }}
+          git branch
+          git checkout master
 
       - name: Download kustomize
         run: make kustomize
