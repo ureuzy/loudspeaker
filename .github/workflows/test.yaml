@@ -3,11 +3,11 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - 'api/**'
-      - 'config/**'
-      - 'controller/**'
-      - 'pkg/**'
+#    paths:
+#      - 'api/**'
+#      - 'config/**'
+#      - 'controller/**'
+#      - 'pkg/**'
 
 jobs:
   test:
@@ -40,7 +40,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           
   notification:
-    needs: [generate-manifests]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: Slack Notification on Success
