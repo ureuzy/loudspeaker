@@ -259,8 +259,8 @@ func (r *LoudspeakerReconciler) reconcileGarbageCollection(ctx context.Context, 
 	}
 
 	for _, dep := range depList.Items {
-		arr := strings.Split(dep.Name, "-")
-		if loudspeaker.IncludeListener(arr[len(arr)-1]) {
+		listenerName := extractListenerName(dep.Name, loudspeaker)
+		if loudspeaker.IncludeListener(listenerName) {
 			continue
 		}
 		err = r.Delete(ctx, &dep)
@@ -270,8 +270,8 @@ func (r *LoudspeakerReconciler) reconcileGarbageCollection(ctx context.Context, 
 	}
 
 	for _, cm := range cmList.Items {
-		arr := strings.Split(cm.Name, "-")
-		if loudspeaker.IncludeListener(arr[len(arr)-1]) {
+		listenerConfigName := extractListenerName(cm.Name, loudspeaker)
+		if loudspeaker.IncludeListener(listenerConfigName) {
 			continue
 		}
 		err = r.Delete(ctx, &cm)
@@ -336,6 +336,10 @@ func labelSet(loudspeaker loudspeakerv1alpha1.Loudspeaker) map[string]string {
 
 func generateName(loudspeaker loudspeakerv1alpha1.Loudspeaker, listener loudspeakerv1alpha1.Listener) string {
 	return fmt.Sprintf("%s-%s", loudspeaker.Name, listener.Name)
+}
+
+func extractListenerName(resourceName string, loudspeaker loudspeakerv1alpha1.Loudspeaker) string {
+	return strings.Replace(resourceName, loudspeaker.Name+"-", "", 1)
 }
 
 func (r *LoudspeakerReconciler) setMetrics(loudspeaker loudspeakerv1alpha1.Loudspeaker) {

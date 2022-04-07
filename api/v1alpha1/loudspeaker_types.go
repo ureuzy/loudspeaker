@@ -95,16 +95,16 @@ type Observe struct {
 	//+kubebuilder:default:=""
 	Namespace string `json:"namespace"`
 
-	//+kubebuilder:default:={""}
+	//+optional
 	IgnoreReasons IgnoreReasons `json:"ignoresReasons,omitempty"`
 
-	//+kubebuilder:default:={""}
+	//+optional
 	InvolvedObjectNames InvolvedObjectNames `json:"involvedObjectNames,omitempty"`
 
-	//+kubebuilder:default:={""}
+	//+optional
 	InvolvedObjectKinds InvolvedObjectKinds `json:"involvedObjectKinds,omitempty"`
 
-	//+kubebuilder:default:={""}
+	//+optional
 	EventTypes EventTypes `json:"eventTypes,omitempty"`
 }
 
