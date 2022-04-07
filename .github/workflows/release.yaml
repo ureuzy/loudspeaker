@@ -1,8 +1,10 @@
 name: release
 on:
-  push:
-    tags:
-      - v*
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
 
 env:
   REGISTRY: ghcr.io
@@ -11,14 +13,39 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/v')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+      
+      - name: Get tag
+        run: |
+          git fetch origin ${{ github.event.pull_request.head.ref }}
+          git checkout ${{ github.event.pull_request.head.ref }}
+          echo "TAG=${{ github.event.pull_request.head.ref }} | sed 's/release\///'" >> $GITHUB_ENV
+
+      - name: Download kustomize
+        run: make kustomize
+
+      - name: Generate manifests
+        run: IMG=${{ env.IMAGE_NAME }}:${{ env.Tag }} make generate-manifests
+
+      - name: Manifests commit
+        run: |
+          if (git diff --shortstat | grep '[0-9]'); then \
+            set -x
+            git config --global user.name "[bot] Github Actions"
+            git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+            git add install/install.yaml
+            git commit --author=. -m 'generated manifests'
+            git push
+          fi
+          
+      - name: Push Tag
+        run: |
+          git tag ${{ env.TAG }}
+          git push origin `echo '${{ github.event.pull_request.head.ref }}' | sed 's/release\///'`
+      
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
