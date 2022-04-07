@@ -3,11 +3,11 @@ on:
   pull_request:
     branches:
       - master
-#    paths:
-#      - 'api/**'
-#      - 'config/**'
-#      - 'controller/**'
-#      - 'pkg/**'
+    paths:
+      - 'api/**'
+      - 'config/**'
+      - 'controller/**'
+      - 'pkg/**'
 
 jobs:
   test:
