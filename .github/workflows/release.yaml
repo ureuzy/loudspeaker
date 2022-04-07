@@ -20,10 +20,9 @@ jobs:
       
       - name: Extract release tag
         run: |
-          echo "TAG=${{ github.event.pull_request.head.ref }} | sed 's/release\///'" >> $GITHUB_ENV
+          echo "TAG=`${{ github.event.pull_request.head.ref }} | sed 's/release\///'`" >> $GITHUB_ENV
           echo release tag ${{ env.TAG }}
           git branch
-          git checkout master
 
       - name: Download kustomize
         run: make kustomize
