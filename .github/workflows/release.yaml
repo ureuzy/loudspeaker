@@ -27,10 +27,11 @@ jobs:
         run: make kustomize
 
       - name: Generate manifests
-        run: IMG=${{ env.IMAGE_NAME }}:${{ env.Tag }} make generate-manifests
+        run: IMG=${{ env.IMAGE_NAME }}:${{ env.TAG }} make generate-manifests
 
       - name: Manifests commit
         run: |
+          git diff
           if (git diff --shortstat | grep '[0-9]'); then \
             set -x
             git config --global user.name "[bot] Github Actions"
