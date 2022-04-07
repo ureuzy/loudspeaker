@@ -8,9 +8,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  release:
+  publish-image:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/v')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
