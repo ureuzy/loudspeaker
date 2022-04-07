@@ -45,7 +45,7 @@ generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and
 
 generate-manifests:
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default -o install/install.yaml
+	$(KUSTOMIZE) build config/default -o install.yaml
 
 fmt: ## Run go fmt against code.
 	go fmt ./...
