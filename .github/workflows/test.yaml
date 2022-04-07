@@ -1,7 +1,8 @@
 name: test
 on:
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
     paths:
       - 'api/**'
       - 'config/**'
@@ -11,15 +12,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: contains(github.head_ref, 'release/v')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
-      - name: test
-        run: |
-          pwd
-          ls
-          echo $GITHUB_WORKSPACE
 
       - name: Set up go
         uses: actions/setup-go@v2
@@ -42,32 +38,6 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          
-  generate-manifests:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-        
-      - name: Download kustomize
-        run: make kustomize
-    
-      - name: Generate manifests
-        run: $GITHUB_WORKSPACE/bin/kustomize build $GITHUB_WORKSPACE/config/default -o $GITHUB_WORKSPACE/install/install.yaml
-        
-      - name: Manifests commit
-        run: |
-          if (git diff --shortstat | grep '[0-9]'); then \
-            set -x
-            git config --global user.name "[bot] Github Actions"
-            git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-            git add install/install.yaml
-            git commit --author=. -m 'generated manifests'
-            git push
-          fi
           
   notification:
     needs: [generate-manifests]
