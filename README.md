@@ -26,7 +26,7 @@ CM(Controller Manager) --> |Reconcile| Configmaps(Configmaps/Runtime Settings)
 ## Install Loudspeaker Operator
 
 ```
-$ kubectl apply -f https://raw.githubusercontent.com/masanetes/loudspeaker/master/install/install.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/masanetes/loudspeaker/master/install.yaml
 ```
 
 > Note: cert-manager is required as a certificate for webhook. If you do not have it, please refer to the link to install it.
