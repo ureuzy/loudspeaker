@@ -400,7 +400,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: masanetes/loudspeaker:v0.0.8
+        image: masanetes/loudspeaker:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
