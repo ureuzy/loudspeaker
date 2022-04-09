@@ -12,7 +12,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: contains(github.head_ref, 'release/v')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
