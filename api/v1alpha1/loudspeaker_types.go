@@ -96,7 +96,7 @@ type Observe struct {
 	Namespace string `json:"namespace"`
 
 	//+optional
-	IgnoreReasons IgnoreReasons `json:"ignoresReasons,omitempty"`
+	IgnoreReasons IgnoreReasons `json:"ignoreReasons,omitempty"`
 
 	//+optional
 	InvolvedObjectNames InvolvedObjectNames `json:"involvedObjectNames,omitempty"`

@@ -72,7 +72,7 @@ spec:
                             items:
                               type: string
                             type: array
-                          ignoresReasons:
+                          ignoreReasons:
                             description: IgnoreReasons is an array of event Reason
                               to ignore
                             items:
