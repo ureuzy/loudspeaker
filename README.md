@@ -1,6 +1,6 @@
 # Loudspeaker Operator
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.1.0?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
 [![Go Reference](https://pkg.go.dev/badge/github.com/masanetes/loudspeaker.svg)](https://pkg.go.dev/github.com/masanetes/loudspeaker)
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml)
@@ -97,7 +97,7 @@ spec:
       credentials: sentry-secrets
       observes:
         - namespace: "" # all namespaces
-          ignoresReasons: ["ScalingReplicaSet"]
+          ignoreReasons: ["ScalingReplicaSet"]
           involvedObjectNames: ["sample-deploy"]
           involvedObjectKinds: ["Deployment"]
           eventTypes: ["Normal"]
@@ -107,7 +107,7 @@ spec:
       credentials: sentry-secrets
       observes:
         - namespace: "default"
-          ignoresReasons: [""]
+          ignoreReasons: [""]
           involvedObjectNames: ["sample-cronjob"]
           involvedObjectKinds: ["Cronjob"]
           eventTypes: ["Warning"]
