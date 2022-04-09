@@ -12,12 +12,12 @@ spec:
       credentials: "sentry-secrets"
       observes:
         - namespace: ""
-          ignoresReasons: ["ScalingReplicaSet"]
+          ignoreReasons: ["ScalingReplicaSet"]
           involvedObjectNames: ["sample-nginx"]
           involvedObjectKinds: ["Deployment"]
           eventTypes: ["Normal"]
         - namespace: "default"
-          ignoresReasons: ["ScalingReplicaSet"]
+          ignoreReasons: ["ScalingReplicaSet"]
           involvedObjectNames: ["sample-nginx"]
           involvedObjectKinds: ["Deployment"]
           eventTypes: ["Normal"]
