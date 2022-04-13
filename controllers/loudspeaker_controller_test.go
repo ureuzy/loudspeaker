@@ -177,11 +177,11 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []loudspeakerv1alpha1.Observe{
 						{
-							Namespace:           "default",
-							IgnoreReasons:       []string{"BackoffLimitExceeded"},
-							InvolvedObjectNames: []string{"sample-foo"},
-							InvolvedObjectKinds: []string{"Deployment"},
-							EventTypes:          []string{"Normal"},
+							Namespace:         "default",
+							IgnoreReasons:     []string{"BackoffLimitExceeded"},
+							IgnoreObjectNames: []string{"sample-foo"},
+							IgnoreObjectKinds: []string{"Deployment"},
+							IgnoreEventTypes:  []string{"Normal"},
 						},
 					},
 				},
@@ -191,11 +191,11 @@ func newLoudSpeaker() *loudspeakerv1alpha1.Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []loudspeakerv1alpha1.Observe{
 						{
-							Namespace:           "default",
-							IgnoreReasons:       []string{"BackoffLimitExceeded"},
-							InvolvedObjectNames: []string{"sample-foo"},
-							InvolvedObjectKinds: []string{"Deployment"},
-							EventTypes:          []string{"Normal"},
+							Namespace:         "default",
+							IgnoreReasons:     []string{"BackoffLimitExceeded"},
+							IgnoreObjectNames: []string{"sample-foo"},
+							IgnoreObjectKinds: []string{"Deployment"},
+							IgnoreEventTypes:  []string{"Normal"},
 						},
 					},
 				},

@@ -51,11 +51,11 @@ func (i *IgnoreReasons) Contains(reason string) bool {
 	return false
 }
 
-// InvolvedObjectNames is an array of event involved object names to be activated.
-type InvolvedObjectNames []string
+// IgnoreObjectNames is an array of event involved object names to ignore
+type IgnoreObjectNames []string
 
 // Contains is whether the argument "objectName" is included or not.
-func (i *InvolvedObjectNames) Contains(objectName string) bool {
+func (i *IgnoreObjectNames) Contains(objectName string) bool {
 	for _, name := range *i {
 		if name == objectName {
 			return true
@@ -64,11 +64,11 @@ func (i *InvolvedObjectNames) Contains(objectName string) bool {
 	return false
 }
 
-// InvolvedObjectKinds is an array of event involved object kinds to be activated.
-type InvolvedObjectKinds []string
+// IgnoreObjectKinds is an array of event involved object kinds to ignore
+type IgnoreObjectKinds []string
 
 // Contains is whether the argument "objectKind" is included or not.
-func (i *InvolvedObjectKinds) Contains(objectKind string) bool {
+func (i *IgnoreObjectKinds) Contains(objectKind string) bool {
 	for _, kind := range *i {
 		if kind == objectKind {
 			return true
@@ -77,11 +77,11 @@ func (i *InvolvedObjectKinds) Contains(objectKind string) bool {
 	return false
 }
 
-// EventTypes is an array of event involved event type to be activated.
-type EventTypes []string
+// IgnoreEventTypes is an array of event involved event type to ignore
+type IgnoreEventTypes []string
 
 // Contains is whether the argument "eventType" is included or not.
-func (i *EventTypes) Contains(eventType string) bool {
+func (i *IgnoreEventTypes) Contains(eventType string) bool {
 	for _, event := range *i {
 		if event == eventType {
 			return true
@@ -99,13 +99,13 @@ type Observe struct {
 	IgnoreReasons IgnoreReasons `json:"ignoreReasons,omitempty"`
 
 	//+optional
-	InvolvedObjectNames InvolvedObjectNames `json:"involvedObjectNames,omitempty"`
+	IgnoreObjectNames IgnoreObjectNames `json:"ignoreObjectNames,omitempty"`
 
 	//+optional
-	InvolvedObjectKinds InvolvedObjectKinds `json:"involvedObjectKinds,omitempty"`
+	IgnoreObjectKinds IgnoreObjectKinds `json:"ignoreObjectKinds,omitempty"`
 
 	//+optional
-	EventTypes EventTypes `json:"eventTypes,omitempty"`
+	IgnoreEventTypes IgnoreEventTypes `json:"ignoreEventTypes,omitempty"`
 }
 
 // Listener defines configuration the Listener to which events are sent

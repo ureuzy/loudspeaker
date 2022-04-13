@@ -41,9 +41,9 @@ spec:
       observes:
         - namespace: "default"
           ignoreReasons: ["ScalingReplicaSet"]
-          involvedObjectNames: ["sample-nginx"]
-          involvedObjectKinds: ["Deployment"]
-          eventTypes: ["Normal"]
+          ignoreObjectNames: ["sample-nginx"]
+          ignoreObjectKinds: ["Deployment"]
+          ignoreEventTypes: ["Normal"]
           
           
           
