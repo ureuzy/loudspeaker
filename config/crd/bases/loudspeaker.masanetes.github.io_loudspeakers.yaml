@@ -66,27 +66,27 @@ spec:
                         description: Observe defines of namespace to observe and events
                           to ignore
                         properties:
-                          eventTypes:
-                            description: EventTypes is an array of event involved
-                              event type to be activated.
+                          ignoreEventTypes:
+                            description: IgnoreEventTypes is an array of event involved
+                              event type to ignore
+                            items:
+                              type: string
+                            type: array
+                          ignoreObjectKinds:
+                            description: IgnoreObjectKinds is an array of event involved
+                              object kinds to ignore
+                            items:
+                              type: string
+                            type: array
+                          ignoreObjectNames:
+                            description: IgnoreObjectNames is an array of event involved
+                              object names to ignore
                             items:
                               type: string
                             type: array
                           ignoreReasons:
                             description: IgnoreReasons is an array of event Reason
                               to ignore
-                            items:
-                              type: string
-                            type: array
-                          involvedObjectKinds:
-                            description: InvolvedObjectKinds is an array of event
-                              involved object kinds to be activated.
-                            items:
-                              type: string
-                            type: array
-                          involvedObjectNames:
-                            description: InvolvedObjectNames is an array of event
-                              involved object names to be activated.
                             items:
                               type: string
                             type: array

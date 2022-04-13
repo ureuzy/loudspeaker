@@ -20,27 +20,27 @@ var _ = Describe("Loudspeaker Types", func() {
 	})
 
 	It("Contains object name", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectNames.Contains("sample-foo")).Should(Equal(true))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreObjectNames.Contains("sample-foo")).Should(Equal(true))
 	})
 
 	It("No contains object name", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectNames.Contains("sample-bar")).Should(Equal(false))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreObjectNames.Contains("sample-bar")).Should(Equal(false))
 	})
 
 	It("Contains object kind", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectKinds.Contains("Deployment")).Should(Equal(true))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreObjectKinds.Contains("Deployment")).Should(Equal(true))
 	})
 
 	It("No contains object kind", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].InvolvedObjectKinds.Contains("Cronjob")).Should(Equal(false))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreObjectKinds.Contains("Cronjob")).Should(Equal(false))
 	})
 
 	It("Contains event type", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].EventTypes.Contains("Normal")).Should(Equal(true))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreEventTypes.Contains("Normal")).Should(Equal(true))
 	})
 
 	It("No contains event type", func() {
-		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].EventTypes.Contains("Warning")).Should(Equal(false))
+		Expect(loudspeaker1.Spec.Listeners[0].Observes[0].IgnoreEventTypes.Contains("Warning")).Should(Equal(false))
 	})
 
 	It("Duplicate listener name", func() {
@@ -77,11 +77,11 @@ func loudspeaker1() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace:           "default",
-							IgnoreReasons:       []string{"BackoffLimitExceeded"},
-							InvolvedObjectNames: []string{"sample-foo"},
-							InvolvedObjectKinds: []string{"Deployment"},
-							EventTypes:          []string{"Normal"},
+							Namespace:         "default",
+							IgnoreReasons:     []string{"BackoffLimitExceeded"},
+							IgnoreObjectNames: []string{"sample-foo"},
+							IgnoreObjectKinds: []string{"Deployment"},
+							IgnoreEventTypes:  []string{"Normal"},
 						},
 					},
 				},
@@ -91,11 +91,11 @@ func loudspeaker1() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace:           "default",
-							IgnoreReasons:       []string{"BackoffLimitExceeded"},
-							InvolvedObjectNames: []string{"sample-foo"},
-							InvolvedObjectKinds: []string{"Deployment"},
-							EventTypes:          []string{"Normal"},
+							Namespace:         "default",
+							IgnoreReasons:     []string{"BackoffLimitExceeded"},
+							IgnoreObjectNames: []string{"sample-foo"},
+							IgnoreObjectKinds: []string{"Deployment"},
+							IgnoreEventTypes:  []string{"Normal"},
 						},
 					},
 				},
@@ -120,11 +120,11 @@ func loudspeaker2() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace:           "default",
-							IgnoreReasons:       []string{"BackoffLimitExceeded"},
-							InvolvedObjectNames: []string{"sample-foo"},
-							InvolvedObjectKinds: []string{"Deployment"},
-							EventTypes:          []string{"Normal"},
+							Namespace:         "default",
+							IgnoreReasons:     []string{"BackoffLimitExceeded"},
+							IgnoreObjectNames: []string{"sample-foo"},
+							IgnoreObjectKinds: []string{"Deployment"},
+							IgnoreEventTypes:  []string{"Normal"},
 						},
 					},
 				},
@@ -134,11 +134,11 @@ func loudspeaker2() *Loudspeaker {
 					Credentials: "sample-secrets",
 					Observes: []Observe{
 						{
-							Namespace:           "default",
-							IgnoreReasons:       []string{"BackoffLimitExceeded"},
-							InvolvedObjectNames: []string{"sample-foo"},
-							InvolvedObjectKinds: []string{"Deployment"},
-							EventTypes:          []string{"Normal"},
+							Namespace:         "default",
+							IgnoreReasons:     []string{"BackoffLimitExceeded"},
+							IgnoreObjectNames: []string{"sample-foo"},
+							IgnoreObjectKinds: []string{"Deployment"},
+							IgnoreEventTypes:  []string{"Normal"},
 						},
 					},
 				},
