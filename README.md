@@ -1,7 +1,7 @@
 # Loudspeaker Operator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.1.0?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
+[![Docker](https://img.shields.io/docker/v/masanetes/loudspeaker/v0.1.1?color=blue&logo=docker)](https://hub.docker.com/repository/docker/masanetes/loudspeaker)
 [![Go Reference](https://pkg.go.dev/badge/github.com/masanetes/loudspeaker.svg)](https://pkg.go.dev/github.com/masanetes/loudspeaker)
 [![Test](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml/badge.svg)](https://github.com/masanetes/loudspeaker/actions/workflows/test.yaml)
 [![report](https://goreportcard.com/badge/github.com/masanetes/loudspeaker)](https://goreportcard.com/report/github.com/masanetes/loudspeaker)
@@ -89,7 +89,6 @@ metadata:
   name: loudspeaker-sample
   namespace: default  
 spec:
-  image: masanetes/loudspeaker-runtime:latest
   serviceAccountName: loudspeaker-runtime  
   listeners:
     - name: foo
@@ -98,9 +97,9 @@ spec:
       observes:
         - namespace: "" # all namespaces
           ignoreReasons: ["ScalingReplicaSet"]
-          involvedObjectNames: ["sample-deploy"]
-          involvedObjectKinds: ["Deployment"]
-          eventTypes: ["Normal"]
+          ignoreObjectNames: ["sample-deploy"]
+          ignoreObjectKinds: ["Deployment"]
+          ignoreEventTypes: ["Normal"]
     
     - name: bar
       type: sentry
@@ -108,7 +107,7 @@ spec:
       observes:
         - namespace: "default"
           ignoreReasons: [""]
-          involvedObjectNames: ["sample-cronjob"]
-          involvedObjectKinds: ["Cronjob"]
-          eventTypes: ["Warning"]
+          ignoreObjectNames: ["sample-cronjob"]
+          ignoreObjectKinds: ["Cronjob"]
+          ignoreEventTypes: ["Warning"]
 ```
