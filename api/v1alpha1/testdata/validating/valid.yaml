@@ -1,4 +1,4 @@
-apiVersion: loudspeaker.masanetes.github.io/v1alpha1
+apiVersion: loudspeaker.ureuzy.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
   name: valid

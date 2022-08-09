@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: loudspeakers.loudspeaker.masanetes.github.io
+  name: loudspeakers.loudspeaker.ureuzy.github.io
 spec:
-  group: loudspeaker.masanetes.github.io
+  group: loudspeaker.ureuzy.github.io
   names:
     kind: Loudspeaker
     listKind: LoudspeakerList

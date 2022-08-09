@@ -1,17 +1,17 @@
-domain: masanetes.github.io
+domain: ureuzy.github.io
 layout:
 - go.kubebuilder.io/v3
 projectName: loudspeaker
-repo: github.com/masanetes/loudspeaker
+repo: github.com/ureuzy/loudspeaker
 resources:
 - api:
     crdVersion: v1
     namespaced: true
   controller: true
-  domain: masanetes.github.io
+  domain: ureuzy.github.io
   group: loudspeaker
   kind: Loudspeaker
-  path: github.com/masanetes/loudspeaker/api/v1alpha1
+  path: github.com/ureuzy/loudspeaker/api/v1alpha1
   version: v1alpha1
   webhooks:
     defaulting: true

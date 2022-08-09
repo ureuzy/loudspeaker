@@ -4,4 +4,4 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-  name: loudspeakers.loudspeaker.masanetes.github.io
+  name: loudspeakers.loudspeaker.ureuzy.github.io

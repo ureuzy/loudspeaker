@@ -25,7 +25,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	"github.com/masanetes/loudspeaker/pkg/constants"
+	"github.com/ureuzy/loudspeaker/pkg/constants"
 )
 
 // log is for logging in this package.
@@ -39,7 +39,7 @@ func (r *Loudspeaker) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-//+kubebuilder:webhook:path=/mutate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker,mutating=true,failurePolicy=fail,sideEffects=None,groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=create;update,versions=v1alpha1,name=mloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
+//+kubebuilder:webhook:path=/mutate-loudspeaker-ureuzy-github-io-v1alpha1-loudspeaker,mutating=true,failurePolicy=fail,sideEffects=None,groups=loudspeaker.ureuzy.github.io,resources=loudspeakers,verbs=create;update,versions=v1alpha1,name=mloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
 
 var _ webhook.Defaulter = &Loudspeaker{}
 
@@ -53,7 +53,7 @@ func (r *Loudspeaker) Default() {
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-//+kubebuilder:webhook:path=/validate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker,mutating=false,failurePolicy=fail,sideEffects=None,groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=create;update,versions=v1alpha1,name=vloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
+//+kubebuilder:webhook:path=/validate-loudspeaker-ureuzy-github-io-v1alpha1-loudspeaker,mutating=false,failurePolicy=fail,sideEffects=None,groups=loudspeaker.ureuzy.github.io,resources=loudspeakers,verbs=create;update,versions=v1alpha1,name=vloudspeaker.kb.io,admissionReviewVersions={v1,v1beta1}
 
 var _ webhook.Validator = &Loudspeaker{}
 

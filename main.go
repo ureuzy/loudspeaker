@@ -30,8 +30,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
-	"github.com/masanetes/loudspeaker/controllers"
+	loudspeakerv1alpha1 "github.com/ureuzy/loudspeaker/api/v1alpha1"
+	"github.com/ureuzy/loudspeaker/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -70,7 +70,7 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
-		LeaderElectionID:       "fc3f4f11.masanetes.github.io",
+		LeaderElectionID:       "fc3f4f11.ureuzy.github.io",
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")

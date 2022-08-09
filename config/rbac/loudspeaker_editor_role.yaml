@@ -5,7 +5,7 @@ metadata:
   name: loudspeaker-editor-role
 rules:
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers/status
   verbs:

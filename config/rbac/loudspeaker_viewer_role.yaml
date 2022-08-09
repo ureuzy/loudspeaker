@@ -5,7 +5,7 @@ metadata:
   name: loudspeaker-viewer-role
 rules:
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers
   verbs:
@@ -13,7 +13,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers/status
   verbs:
