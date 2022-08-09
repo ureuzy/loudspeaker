@@ -1,7 +1,7 @@
 # Loudspeaker Operator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/docker/v/ureuzy/loudspeaker/v0.1.1?color=blue&logo=docker)](https://hub.docker.com/repository/docker/ureuzy/loudspeaker)
+[![Docker](https://img.shields.io/docker/v/ureuzy/loudspeaker/v0.1.2?color=blue&logo=docker)](https://hub.docker.com/repository/docker/ureuzy/loudspeaker)
 [![Go Reference](https://pkg.go.dev/badge/github.com/ureuzy/loudspeaker.svg)](https://pkg.go.dev/github.com/ureuzy/loudspeaker)
 [![Test](https://github.com/ureuzy/loudspeaker/actions/workflows/test.yaml/badge.svg)](https://github.com/ureuzy/loudspeaker/actions/workflows/test.yaml)
 [![report](https://goreportcard.com/badge/github.com/ureuzy/loudspeaker)](https://goreportcard.com/report/github.com/ureuzy/loudspeaker)
