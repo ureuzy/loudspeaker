@@ -40,8 +40,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
 
-	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
-	"github.com/masanetes/loudspeaker/pkg/constants"
+	loudspeakerv1alpha1 "github.com/ureuzy/loudspeaker/api/v1alpha1"
+	"github.com/ureuzy/loudspeaker/pkg/constants"
 )
 
 // LoudspeakerReconciler reconciles a Loudspeaker object
@@ -51,9 +51,9 @@ type LoudspeakerReconciler struct {
 	Recorder record.EventRecorder
 }
 
-//+kubebuilder:rbac:groups=loudspeaker.masanetes.github.io,resources=loudspeakers,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=loudspeaker.masanetes.github.io,resources=loudspeakers/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=loudspeaker.masanetes.github.io,resources=loudspeakers/finalizers,verbs=update
+//+kubebuilder:rbac:groups=loudspeaker.ureuzy.github.io,resources=loudspeakers,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=loudspeaker.ureuzy.github.io,resources=loudspeakers/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=loudspeaker.ureuzy.github.io,resources=loudspeakers/finalizers,verbs=update
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=configmaps,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=secrets,verbs=get;list;watch

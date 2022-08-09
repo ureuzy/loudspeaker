@@ -13,12 +13,12 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /mutate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker
+      path: /mutate-loudspeaker-ureuzy-github-io-v1alpha1-loudspeaker
   failurePolicy: Fail
   name: mloudspeaker.kb.io
   rules:
   - apiGroups:
-    - loudspeaker.masanetes.github.io
+    - loudspeaker.ureuzy.github.io
     apiVersions:
     - v1alpha1
     operations:
@@ -42,12 +42,12 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /validate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker
+      path: /validate-loudspeaker-ureuzy-github-io-v1alpha1-loudspeaker
   failurePolicy: Fail
   name: vloudspeaker.kb.io
   rules:
   - apiGroups:
-    - loudspeaker.masanetes.github.io
+    - loudspeaker.ureuzy.github.io
     apiVersions:
     - v1alpha1
     operations:

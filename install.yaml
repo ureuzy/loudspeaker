@@ -11,9 +11,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: loudspeakers.loudspeaker.masanetes.github.io
+  name: loudspeakers.loudspeaker.ureuzy.github.io
 spec:
-  group: loudspeaker.masanetes.github.io
+  group: loudspeaker.ureuzy.github.io
   names:
     kind: Loudspeaker
     listKind: LoudspeakerList
@@ -226,7 +226,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers
   verbs:
@@ -238,13 +238,13 @@ rules:
   - update
   - watch
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers/finalizers
   verbs:
   - update
 - apiGroups:
-  - loudspeaker.masanetes.github.io
+  - loudspeaker.ureuzy.github.io
   resources:
   - loudspeakers/status
   verbs:
@@ -333,7 +333,7 @@ data:
       port: 9443
     leaderElection:
       leaderElect: true
-      resourceName: fc3f4f11.masanetes.github.io
+      resourceName: fc3f4f11.ureuzy.github.io
 kind: ConfigMap
 metadata:
   name: loudspeaker-manager-config
@@ -400,7 +400,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: masanetes/loudspeaker:v0.1.1
+        image: ureuzy/loudspeaker:v0.1.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -478,12 +478,12 @@ webhooks:
     service:
       name: loudspeaker-webhook-service
       namespace: loudspeaker-system
-      path: /mutate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker
+      path: /mutate-loudspeaker-ureuzy-github-io-v1alpha1-loudspeaker
   failurePolicy: Fail
   name: mloudspeaker.kb.io
   rules:
   - apiGroups:
-    - loudspeaker.masanetes.github.io
+    - loudspeaker.ureuzy.github.io
     apiVersions:
     - v1alpha1
     operations:
@@ -507,12 +507,12 @@ webhooks:
     service:
       name: loudspeaker-webhook-service
       namespace: loudspeaker-system
-      path: /validate-loudspeaker-masanetes-github-io-v1alpha1-loudspeaker
+      path: /validate-loudspeaker-ureuzy-github-io-v1alpha1-loudspeaker
   failurePolicy: Fail
   name: vloudspeaker.kb.io
   rules:
   - apiGroups:
-    - loudspeaker.masanetes.github.io
+    - loudspeaker.ureuzy.github.io
     apiVersions:
     - v1alpha1
     operations:

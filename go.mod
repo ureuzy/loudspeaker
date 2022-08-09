@@ -1,4 +1,4 @@
-module github.com/masanetes/loudspeaker
+module github.com/ureuzy/loudspeaker
 
 go 1.16
 

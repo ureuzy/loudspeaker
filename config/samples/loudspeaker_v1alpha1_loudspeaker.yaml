@@ -26,13 +26,13 @@ stringData:
   credentials.yaml: |
     dsn: "sample"
 ---
-apiVersion: loudspeaker.masanetes.github.io/v1alpha1
+apiVersion: loudspeaker.ureuzy.github.io/v1alpha1
 kind: Loudspeaker
 metadata:
   name: loudspeaker-sample
   namespace: default
 spec:
-  image: masanetes/loudspeaker-runtime:latest
+  image: ureuzy/loudspeaker-runtime:latest
   serviceAccountName: loudspeaker-runtime
   listeners:
     - name: foo

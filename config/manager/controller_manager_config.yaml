@@ -8,4 +8,4 @@ webhook:
   port: 9443
 leaderElection:
   leaderElect: true
-  resourceName: fc3f4f11.masanetes.github.io
+  resourceName: fc3f4f11.ureuzy.github.io

@@ -14,7 +14,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	loudspeakerv1alpha1 "github.com/masanetes/loudspeaker/api/v1alpha1"
+	loudspeakerv1alpha1 "github.com/ureuzy/loudspeaker/api/v1alpha1"
 )
 
 var _ = Describe("Loudspeaker controller", func() {
