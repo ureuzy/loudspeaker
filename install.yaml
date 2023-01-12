@@ -400,7 +400,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: ureuzy/loudspeaker:v0.1.1
+        image: ureuzy/loudspeaker:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
