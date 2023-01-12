@@ -1,9 +1,9 @@
 package constants
 
 const (
-	DefaultImage         = "loudspeaker-runtime:latest"
+	DefaultImage         = "ureuzy/loudspeaker-runtime:latest"
 	RuntimeLabelsKey     = "app"
-	ContainerName        = "loudspeaker-runtime"
+	ContainerName        = "ureuzy/loudspeaker-runtime:latest"
 	DefaultReplicas      = 1
 	CredentialsMountPath = "/loudspeaker/creds"
 )
