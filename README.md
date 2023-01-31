@@ -15,12 +15,6 @@ These settings are managed by configmap, and the runtime can change its observat
 [See runtime doc for details](https://github.com/ureuzy/loudspeaker-runtime)
 
 
-```mermaid
-graph LR
-CM(Controller Manager) --> |Reconcile| Deployments(Deployments/Runtime)
-CM(Controller Manager) --> |Reconcile| Configmaps(Configmaps/Runtime Settings)
-```
-
 # 🚀 Quick Start
 
 ## Install Loudspeaker Operator
